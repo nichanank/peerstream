@@ -6,7 +6,6 @@ import { Web3ReactProvider, createWeb3ReactRoot } from '@web3-react/core'
 import { ethers } from 'ethers'
 import { NetworkContextName } from './constants'
 import App from './pages/App'
-
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 import "./index.css";

@@ -3,6 +3,7 @@ import { BrowserRouter, Redirect, Route } from 'react-router-dom'
 import styled from 'styled-components'
 import { Home } from './Home'
 import { Discover } from './Discover'
+import { Meeting } from './Meeting'
 import { useWeb3React } from '@web3-react/core'
 import Web3ReactManager from '../components/Web3ReactManager'
 
@@ -59,7 +60,7 @@ export default function App() {
     console.log('success')
     console.log(context)
   }
-
+  
   return (
     <>
       <Suspense fallback={null}>
@@ -75,6 +76,7 @@ export default function App() {
                     <Route exact path="/" component={Home} />
                     <Route path={"/home"} component={Home} />
                     <Route path={"/discover"} component={Discover} />
+                    <Route path={"/meeting"} component={Meeting} />
                   </Suspense>
                 </Web3ReactManager>
               </Body>
