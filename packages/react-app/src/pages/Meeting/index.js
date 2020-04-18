@@ -91,46 +91,47 @@ export function Meeting() {
     height: '100%',
   }
   
-   function startConference() {
-    try {
-     const domain = 'meet.jit.si';
-     const options = {
-      roomName: 'roomName',
-      height: 400,
-      parentNode: document.getElementById('jitsi-container'),
-      interfaceConfigOverwrite: {
-       filmStripOnly: false,
-       SHOW_JITSI_WATERMARK: false,
-      },
-      configOverwrite: {
-       disableSimulcast: false,
-      },
-     };
+  //  function startConference() {
+  //   try {
+  //    const domain = 'meet.jit.si';
+  //    const options = {
+  //     roomName: 'roomName',
+  //     height: 400,
+  //     parentNode: document.getElementById('jitsi-container'),
+  //     interfaceConfigOverwrite: {
+  //      filmStripOnly: false,
+  //      SHOW_JITSI_WATERMARK: false,
+  //     },
+  //     configOverwrite: {
+  //      disableSimulcast: false,
+  //     },
+  //    };
   
-     const api = new JitsiMeetExternalAPI(domain, options);
-     api.addEventListener('videoConferenceJoined', () => {
-      console.log('Local User Joined');
-      setLoading(false);
-      api.executeCommand('displayName', 'MyName');
-     });
-    } catch (error) {
-     console.error('Failed to load Jitsi API', error);
-    }
-   }
+  //    const api = new JitsiMeetExternalAPI(domain, options);
+  //    api.addEventListener('videoConferenceJoined', () => {
+  //     console.log('Local User Joined');
+  //     setLoading(false);
+  //     api.executeCommand('displayName', 'MyName');
+  //    });
+  //   } catch (error) {
+  //    console.error('Failed to load Jitsi API', error);
+  //   }
+  //  }
   
-   useEffect(() => {
-    // verify the JitsiMeetExternalAPI constructor is added to the global..
-    if (window.JitsiMeetExternalAPI) startConference();
-    else alert('Jitsi Meet API script not loaded');
-   }, []);
+  //  useEffect(() => {
+  //   // verify the JitsiMeetExternalAPI constructor is added to the global..
+  //   if (window.JitsiMeetExternalAPI) startConference();
+  //   else alert('Jitsi Meet API script not loaded');
+  //  }, []);
 
         
     return (
       <>
-        <div style={containerStyle}>
-          {/* {loading && <ProgressComponent />} */}
+        {/* <div style={containerStyle}>
+          {loading && <ProgressComponent />}
             <div id="jitsi-container" style={jitsiContainerStyle}/>
-        </div>
+        </div> */}
+        <div>meeting</div>
       </>
     )
   }

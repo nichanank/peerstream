@@ -1,49 +1,64 @@
 import React, { useState } from 'react'
+import { useWeb3React } from '@web3-react/core'
 import styled from 'styled-components'
+import PeerCard from '../../components/PeerCard'
+
+const Page = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 0 0;
+`
 
 const Jumbotron = styled.div`
-  text-align: center;
-  padding-top: 86px;
-  padding-bottom: 115px;
-  background-size: cover;
-  margin-bottom: 7%;
+  position: relative;
+  width: 100vw;
+  height: 581px;
+  top: 64px;
+  background: linear-gradient(180deg, #76B39D 0%, rgba(255, 255, 255, 0) 100%), #F9F8EB;
 `
 
 const MainHeader = styled.h1`
-  color: rgb(31, 31, 31);
-  font-weight: 800;
-  font-size: 3.7rem;
-  text-align: center;
-`
-
-const SubHeader = styled.p`
-  color: rgb(31, 31, 31);
-  font-weight: 800;
-  font-size: 1.5rem;
-  text-align: center;
-`
-
-const OneLinerWrapper = styled.div`
-  font-size: 0.9em;  
-  margin-bottom: 2em;
-  margin-top: 2em;
-  margin-left: 1em;
-  margin-right: 1em;
-  
-`
-
-const OneLiner = styled.h5`
-  color: ${({ theme }) => theme.textColor};
-  text-align: center;
-  word-spacing: 2px;
-`
-
-const Header = styled.h3`
-  color: ${({ theme }) => theme.textColor};  
+  color: black;  
   font-weight: 600;
   font-size: 1.5rem;
   padding-top: 4px;
   letter-spacing: 1px
+`
+
+const OneLinerContainer = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 376px;
+  background: #F9F8EB;
+`
+
+const OneLiner = styled.h3`
+  font-family: Ubuntu Helvetica;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 3.5rem; 
+  text-align: center;
+  color: #155E63;
+`
+
+const SubOneLiner = styled.h4`
+  font-family: Ubuntu Helvetica;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 1.5rem;
+  text-align: center;
+  color: #155E63;
+`
+
+const DiscoverContainer = styled.div`
+  position: relative;
+  width: 100vw;
+  height: 1284px;
+  background: #F9F8EB;
 `
 
 const Description = styled.p`
@@ -83,10 +98,30 @@ function useFormInput(initialValue) {
 }
 
 export function Discover() {
+
+  const { library, account } = useWeb3React()
+
+  const [peerList, setPeerList] = useState([])
+
+  //design the discover container
+  
+  
+  //populate the discover list from ethAddresses that have signed up to be a peer
         
     return (
-      <>
-        <div>discover</div>
-      </>
+      <Page>
+      <Jumbotron>
+        <MainHeader>Find your mentor</MainHeader>
+      </Jumbotron>
+      <OneLinerContainer>
+        <OneLiner>Someone here might be able to help you...</OneLiner>
+        <SubOneLiner>Connect with them to start a chat!</SubOneLiner> 
+      </OneLinerContainer>
+      <DiscoverContainer>
+        <PeerCard ethAddress='0xdbF14da8949D157B57acb79f6EEE62412b210900'>
+          <div>discover</div>
+        </PeerCard>
+      </DiscoverContainer>
+      </Page>
     )
   }

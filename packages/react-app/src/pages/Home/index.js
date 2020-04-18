@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { useContract } from '../../hooks'
 import { gql } from "apollo-boost"
@@ -57,7 +57,7 @@ export function Home() {
     console.log({ nextStreamId: nextStreamId.toString() });
   }
   
-    React.useEffect(() => {
+    useEffect(() => {
       if (!loading && !error && data && data.streams) {
         console.log({ streams: data.streams });
       }
