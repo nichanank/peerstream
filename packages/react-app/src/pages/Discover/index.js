@@ -1,7 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import styled from 'styled-components'
+import Box from '3box'
 import PeerCard from '../../components/PeerCard'
+import StreamConfigModal from '../../components/StreamConfigModal'
+
+const MOCK_PEER_LIST = ['0xdbF14da8949D157B57acb79f6EEE62412b210900', '0xdbF14da8949D157B57acb79f6EEE62412b210900', '0xdbF14da8949D157B57acb79f6EEE62412b210900', '0xdbF14da8949D157B57acb79f6EEE62412b210900']
 
 const Page = styled.div`
   display: flex;
@@ -13,7 +17,6 @@ const Jumbotron = styled.div`
   position: relative;
   width: 100vw;
   height: 581px;
-  top: 64px;
   background: linear-gradient(180deg, #76B39D 0%, rgba(255, 255, 255, 0) 100%), #F9F8EB;
 `
 
@@ -54,6 +57,7 @@ const SubOneLiner = styled.h4`
   color: #155E63;
 `
 
+//design the discover container
 const DiscoverContainer = styled.div`
   position: relative;
   width: 100vw;
@@ -71,56 +75,100 @@ const Description = styled.p`
   padding-right: 15px;
 `
 
-const Image = styled.img`
-  height: 12em;
-  width: 21em;
-  margin-bottom: 0;
-  padding-bottom: 0;
-`
-
-const Icon = styled.img`
-  height: 12em;
-  width: 12em;
-  margin-bottom: 0;
-  padding-bottom: 0;
-`
-
-function useFormInput(initialValue) {
-  const [value, setValue] = useState(initialValue)
-
-  function handleChange(e) {
-    setValue(e.target.value)
-  }
-  return {
-    value,
-    onChange: handleChange
-  }
-}
-
 export function Discover() {
 
   const { library, account } = useWeb3React()
 
   const [peerList, setPeerList] = useState([])
+  const [box, setBox] = useState({})
+  const [space, setSpace] = useState({})
+  const [thread, setThread] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [streamConfigModalIsOpen, setStreamConfigModalIsOpen] = useState(false)
 
-  //design the discover container
+  // create a 3box instance and open space
+  useEffect(() => {
+    setLoading(true)
+    async function openBox() {
+      const box = await Box.openBox(account, library.provider)
+      // await box.syncDone
+      return box        
+    }
+    async function openSpace(boxInstance) {
+      const space = await boxInstance.openSpace('stream')
+      // await space.syncDone
+      console.log(space)
+      return space
+    }
+    openBox(account, library.provider).then((box) => {
+      setBox(box)
+      openSpace(box).then((space) => setSpace(space))
+      setLoading(false)
+    })
+  }, [account, library.provider])
+
   
-  
-  //populate the discover list from ethAddresses that have signed up to be a peer
+  //aysync retrieve people who have signed up to be peers and set peerList to this
+  async function getAppsThread(thread) {
+    console.log('getting into apps thread')
+    if (!thread) {
+      console.error("apps thread not in react state");
+      return;
+    }
+    setThread(thread)
+    console.log(thread)
+
+    const posts = await thread.getPosts();
+    setPeerList(posts)
+
+    await thread.onUpdate(async()=> {
+      const posts = await thread.getPosts();
+      setPeerList(posts);
+      console.log(posts)
+    })
+  }
+
+
+  //populate the discover list from ethAddresses that have signed up to be a peer. this should read from a public thread
+  function populateDiscover() {
+      return MOCK_PEER_LIST.map((peer, index) => {
+        return(
+          <React.Fragment key={index}>
+            <PeerCard ethAddress={peer} space={space} box={box} configureStream={() => setStreamConfigModalIsOpen(true)} ></PeerCard> 
+          <StreamConfigModal 
+              recipient={peer}
+              isOpen={streamConfigModalIsOpen}
+              onDismiss={() => setStreamConfigModalIsOpen(false)} />
+          </React.Fragment>
+          )
+      })
+    // if (peerList) {
+    //   peerList.map((peer) => {
+    //     return <PeerCard ethAddress={peer.ethAddress}></PeerCard> 
+    //   })
+    // } return null
+  }
+  console.log(box)
         
     return (
       <Page>
       <Jumbotron>
         <MainHeader>Find your mentor</MainHeader>
+        <button onClick={async () => {
+          const thread = await space.joinThread("peer_list", {
+            firstModerator: account,
+            members: false
+          })
+          setThread(() => getAppsThread(thread))
+        }
+      }>Connect to 3Box</button>
       </Jumbotron>
       <OneLinerContainer>
         <OneLiner>Someone here might be able to help you...</OneLiner>
         <SubOneLiner>Connect with them to start a chat!</SubOneLiner> 
       </OneLinerContainer>
       <DiscoverContainer>
-        <PeerCard ethAddress='0xdbF14da8949D157B57acb79f6EEE62412b210900'>
-          <div>discover</div>
-        </PeerCard>
+        {populateDiscover()}
       </DiscoverContainer>
       </Page>
     )

@@ -7,7 +7,7 @@ import { Meeting } from './Meeting'
 import { useWeb3React } from '@web3-react/core'
 import Web3ReactManager from '../components/Web3ReactManager'
 
-// import Header from '../components/Header'
+import Header from '../components/Header'
 // import Footer from '../components/Footer'
 
 import { isAddress } from '../utils'
@@ -67,7 +67,7 @@ export default function App() {
         <AppWrapper>
           <BrowserRouter>
             <HeaderWrapper>
-              {/* <Header /> */}
+              <Header />
             </HeaderWrapper>
             <BodyWrapper>
               <Body>
