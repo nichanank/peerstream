@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react'
+import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { ethers } from 'ethers'
 import { BigNumber}  from 'bignumber.js'
@@ -8,7 +8,7 @@ import { isMobile } from 'react-device-detect'
 import escapeStringRegex from 'escape-string-regexp'
 import Select from 'react-select'
 import { useContract, useERC20Contract } from '../../hooks'
-import { calculateGasMargin, isAddress } from '../../utils'
+import { calculateGasMargin, getStreamEventsBetween, isAddress } from '../../utils'
 import { BorderlessInput } from '../../theme'
 import { useTokenDetails, useAllTokenDetails, INITIAL_TOKENS_CONTEXT } from '../../contexts/Tokens'
 import Modal from '../Modal'
@@ -109,7 +109,7 @@ const StartStreamButton = styled.button`
   }
 `
 
-const ApproveTokenButton = styled.button`
+const StreamConfigButton = styled.button`
   align-items: center;
   font-size: 1rem;
   color: ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.textColor)};
@@ -290,33 +290,19 @@ export default function StreamConfigModal({
   hideETH=false
   }) {
   
-    const { account, chainId } = useWeb3React()
+  const { account, chainId, library } = useWeb3React()
   
   const sablier = useContract("Sablier")
   const testDai = useERC20Contract("0xc3dbf84Abb494ce5199D5d4D815b10EC29529ff8")
   
-  
   const allTokens = useAllTokenDetails()
-
-  // const sablier = new ethers.Contract(0xabcd..., sablierABI, signer); // get a handle for the Sablier contract
-  // const recipient = 0xcdef...;
-  // const deposit = "2999999999999998944000"; // almost 3,000, but not quite
-  // const now = Math.round(new Date().getTime() / 1000); // get seconds since unix epoch
-  // const startTime = now + 3600; // 1 hour from now
-  // const stopTime = now + 2592000 + 3600; // 30 days and 1 hour from now
-
-  // const token = new ethers.Contract(0xcafe..., erc20ABI, signer); // get a handle for the token contract
-  // const approveTx = await token.approve(sablier.address, deposit); // approve the transfer
-  // await approveTx.wait();
-
-  // const createStreamTx = await sablier.createStream(recipient, deposit, token.address, startTime, stopTime);
-  // await createStreamTx.wait();
   
-  const [deposit, setDeposit] = useState(0)
+  const [deposit, setDeposit] = useState("")
   const [startTime, setStartTime] = useState(0)
   const [stopTime, setStopTime] = useState(0)
   const [selectedToken, setSelectedToken] = useState({})
   const [searchQuery, setSearchQuery] = useState('')
+  const [streamHistory, setStreamHistory] = useState([])
 
   // manage focus on modal show
   const inputRef = useRef()
@@ -325,6 +311,7 @@ export default function StreamConfigModal({
     setDeposit(0)
     setStartTime(0)
     setStopTime(0)
+    setStreamHistory([])
     setSelectedToken()
     onDismiss()
   }
@@ -333,6 +320,12 @@ export default function StreamConfigModal({
     const input = event.target.value
     
   }
+
+  useEffect(() => {
+    getStreamEventsBetween(chainId, library, account, '0x8aDa904a7Df2088024eabD0de41a880AD9ECe4d3', account).then((streams) => {
+      setStreamHistory(streams)
+    })
+  }, [chainId, library, account, recipient])
 
   function renderStartStreamButton() {
     if (!deposit || !startTime || !stopTime) {
@@ -485,7 +478,7 @@ export default function StreamConfigModal({
       )
     })
   }
-
+  
   return (
     <Modal
       isOpen={isOpen}
@@ -581,32 +574,52 @@ export default function StreamConfigModal({
       </InputRow>
       <InputRow>
           <Aligner>
-          <button onClick={async () => {
+          <StreamConfigButton onClick={async () => {
             const now = Math.round(new Date().getTime() / 1000); // get seconds since unix epoch
-            const testStart = now + 3600; // 1 hour from now
-            const testStop = now + 2592000 + 3600; // 30 days and 1 hour from now
-            const adjustedPayment = new BigNumber(2999999999999998944000).multipliedBy(10 ** 18).toFixed(0);
-            setDeposit(adjustedPayment)
+            const testStart = now + 200
+            const testStop = now + 1000 + 200
+            const amount = "9000"
+            setDeposit(amount)
             setStartTime(testStart)
             setStopTime(testStop)
             setSelectedToken('0xc3dbf84Abb494ce5199D5d4D815b10EC29529ff8') //testnetDAI
-            const approveTx = await testDai.approve('0xc04Ad234E01327b24a831e3718DBFcbE245904CC', deposit); // approve the transfer
-            await approveTx.wait()
+            const estimatedGas = await testDai.estimate.approve('0xc04Ad234E01327b24a831e3718DBFcbE245904CC', Number(amount))
+            const approveTx = await testDai.approve('0xc04Ad234E01327b24a831e3718DBFcbE245904CC', Number(amount), {
+              gasLimit: calculateGasMargin(estimatedGas, GAS_MARGIN)
+            })
             console.log(approveTx)
-          }}>Approve test DAI</button> 
-
-          <button onClick={async () => {
-            console.log(deposit)
+          }}>Approve test DAI</StreamConfigButton> 
+          <StreamConfigButton onClick={async () => {
             const estimatedGas = await sablier.estimate.createStream('0x8aDa904a7Df2088024eabD0de41a880AD9ECe4d3', deposit, selectedToken, startTime, stopTime)
-            console.log(estimatedGas)
-            sablier
+            const streamTx = sablier
               .createStream('0x8aDa904a7Df2088024eabD0de41a880AD9ECe4d3', deposit, selectedToken, startTime, stopTime, {
                 gasLimit: calculateGasMargin(estimatedGas, GAS_MARGIN)
               })
-              .then((tx) => {
-                console.log(tx)
-              })
-          }}>Start test stream</button> 
+            console.log(streamTx)
+          }}>Start test stream</StreamConfigButton> 
+          <StreamConfigButton onClick={async () => {
+            const stream = await sablier.getStream(parseInt(streamHistory[streamHistory.length-1].topics[1]));
+            console.log(stream)
+            const balance = await sablier.balanceOf(parseInt(streamHistory[streamHistory.length-1].topics[1]), '0x8aDa904a7Df2088024eabD0de41a880AD9ECe4d3');
+            console.log(balance)
+
+          }}>Get stream info</StreamConfigButton>
+          <StreamConfigButton onClick={async () => {
+            const estimatedGas = await sablier.estimate.cancelStream(parseInt(streamHistory[streamHistory.length-1].topics[1]))
+            const cancelStreamTx = await sablier.cancelStream(parseInt(streamHistory[streamHistory.length-1].topics[1]), {
+              gasLimit: calculateGasMargin(estimatedGas, GAS_MARGIN)
+            });
+            console.log(cancelStreamTx)
+          }}>Cancel stream</StreamConfigButton>
+          <StreamConfigButton onClick={async () => {
+            const balance = await sablier.balanceOf(parseInt(streamHistory[streamHistory.length-1].topics[1]), '0x8aDa904a7Df2088024eabD0de41a880AD9ECe4d3');
+            console.log(balance)
+            const estimatedGas = await sablier.estimate.withdrawFromStream(parseInt(streamHistory[streamHistory.length-1].topics[1]))
+            const withdrawFromStreamTx = await sablier.withdrawFromStream(parseInt(streamHistory[streamHistory.length-1].topics[1]), balance, {
+              gasLimit: calculateGasMargin(estimatedGas, GAS_MARGIN)
+            });
+            console.log(withdrawFromStreamTx)
+          }}>Withdraw from stream</StreamConfigButton>
           </Aligner>
       </InputRow>
         </ConfigModal>

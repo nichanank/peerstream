@@ -9,10 +9,11 @@ import App from './pages/App'
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 import "./index.css";
-
+import ThemeProvider, { GlobalStyle } from './theme'
 // import LocalStorageContextProvider, { Updater as LocalStorageContextUpdater } from './contexts/LocalStorage'
-// import ApplicationContextProvider, { Updater as ApplicationContextUpdater } from './contexts/Application'
+import ApplicationContextProvider, { Updater as ApplicationContextUpdater } from './contexts/Application'
 // import TransactionContextProvider, { Updater as TransactionContextUpdater } from './contexts/Transactions'
+import TokensContextProvider, { Updater as TokensContextUpdater } from './contexts/Tokens'
 
 require('./App.css')
 
@@ -31,42 +32,44 @@ const client = new ApolloClient({
 });
 
 
-// function ContextProviders({ children }) {
-//   return (
-//     <LocalStorageContextProvider>
-//       <ApplicationContextProvider>
-//         <TransactionContextProvider>
-//             {children}
-//         </TransactionContextProvider>
-//       </ApplicationContextProvider>
-//     </LocalStorageContextProvider>
-//   )
-// }
+function ContextProviders({ children }) {
+  return (
+    // <LocalStorageContextProvider>
+      <ApplicationContextProvider>
+        {/* <TransactionContextProvider> */}
+        <TokensContextProvider>
+            {children}
+        </TokensContextProvider>
+        {/* </TransactionContextProvider> */}
+      </ApplicationContextProvider>
+    /* </LocalStorageContextProvider> */
+  )
+}
 
-// function Updaters() {
-//   return (
-//     <>
-//       <LocalStorageContextUpdater />
-//       <ApplicationContextUpdater />
-//       <TransactionContextUpdater />
-//     </>
-//   )
-// }
+function Updaters() {
+  return (
+    <>
+      {/* <LocalStorageContextUpdater /> */}
+      <ApplicationContextUpdater />
+      {/* <TransactionContextUpdater /> */}
+    </>
+  )
+}
 
 ReactDOM.render(
       <Web3ReactProvider
         getLibrary={getLibrary}>
         <Web3ProviderNetwork getLibrary={getLibrary}>
-          {/* <ContextProviders> */}
-            {/* <Updaters /> */}
-            {/* <ThemeProvider> */}
+          <ContextProviders>
+            <Updaters />
+            <ThemeProvider>
               {/* <GlobalStyle /> */}
               <ApolloProvider client={client}>
                 <App />
                 {/* <div>hi</div> */}
               </ApolloProvider>
-          {/* </ThemeProvider> */}
-          {/* </ContextProviders> */}
+          </ThemeProvider>
+          </ContextProviders>
         </Web3ProviderNetwork>
       </Web3ReactProvider>
   , document.getElementById('root'))

@@ -82,7 +82,7 @@ const ConnectButton = styled.button`
   color: #FFFFFF;
 `
 
-export default function PeerCard({ space, box, ethAddress, configureStream }) {
+export default function PeerCard({ space, box, ethAddress, configureStream, createNewConfidentialThread }) {
 
   const { library, account } = useWeb3React()
   const sablier = useContract("Sablier")
@@ -136,14 +136,16 @@ export default function PeerCard({ space, box, ethAddress, configureStream }) {
           <a href={THREEBOX_URL + ethAddress}><SocialIcon src={threeBox_icon} alt={ethAddress}></SocialIcon></a>
         </SocialIconContainer>
         { Object.keys(space).length > 0 ? <ConnectButton onClick={async () => {
-            const thread = await space.joinThread('stream-dms-' + ethAddress)
+            const thread = await space.createConfidentialThread('stream-dms-' + ethAddress)
             // const thread = await space.joinThreadByAddress('stream-dms-' + ethAddress)
             await thread.addMember(ethAddress)
             console.log('added member: ' + ethAddress)
-            await thread.post('what is up')
-            console.log('first post!')
+            await thread.post('hey, just created a thread with you...')
             const posts = await thread.getPosts()
-            console.log(posts) }}>Connect</ConnectButton> : 
+            const latestPost = { ...posts[posts.length-1], sender: account, recipient: ethAddress }
+            console.log(latestPost)
+            createNewConfidentialThread(latestPost)
+          }}>Connect</ConnectButton> : 
             <button onClick={() => console.log(space)}>connect to 3box to continue</button> 
           }
           { Object.keys(space).length >= 0 ? <ConnectButton onClick={configureStream}
@@ -157,18 +159,3 @@ export default function PeerCard({ space, box, ethAddress, configureStream }) {
       </Card>
     )
 }
-
-
-// const sablier = new ethers.Contract(0xabcd..., sablierABI, signer); // get a handle for the Sablier contract
-// const recipient = 0xcdef...;
-// const deposit = "2999999999999998944000"; // almost 3,000, but not quite
-// const now = Math.round(new Date().getTime() / 1000); // get seconds since unix epoch
-// const startTime = now + 3600; // 1 hour from now
-// const stopTime = now + 2592000 + 3600; // 30 days and 1 hour from now
-
-// const token = new ethers.Contract(0xcafe..., erc20ABI, signer); // get a handle for the token contract
-// const approveTx = await token.approve(sablier.address, deposit); // approve the transfer
-// await approveTx.wait();
-
-// const createStreamTx = await sablier.createStream(recipient, deposit, token.address, startTime, stopTime);
-// await createStreamTx.wait();

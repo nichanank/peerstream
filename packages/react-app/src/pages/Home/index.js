@@ -52,7 +52,6 @@ export function Home() {
   const { loading, error, data } = useQuery(GET_STREAMS);  
   
   async function readOnChainData() {
-    // A pre-defined address that owns some cDAI tokens
     const nextStreamId = await sablierContract.nextStreamId();
     console.log({ nextStreamId: nextStreamId.toString() });
   }
@@ -66,7 +65,7 @@ export function Home() {
     return (
       <>
         <div>hi</div>
-        <button onClick={() => readOnChainData()} style={{ display: "none" }}>
+        <button onClick={() => readOnChainData()} >
           Read On-Chain Data
         </button>
       </>

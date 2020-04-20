@@ -81,6 +81,14 @@ export async function getTokenName(tokenAddress, library) {
     })
 }
 
+export async function getStreamEventsBetween(chainId, library, sender, recipient, account) { //chainId, library, contractName, account
+  const sablier = getContract(chainId, library, "Sablier", account)
+  const filter = sablier.filters.CreateStream(null, sender, recipient)
+  filter.fromBlock = 0
+  filter.toBlock = "latest"
+  return getEvents(library, filter)
+}
+
 export async function getTokenSymbol(tokenAddress, library) {
   if (!isAddress(tokenAddress)) {
     throw Error(`Invalid 'tokenAddress' parameter '${tokenAddress}'.`)
