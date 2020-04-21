@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import Box from '3box'
 import styled from 'styled-components'
-import { ethers } from 'ethers'
 
 //socal icons
 import github_icon from '../../assets/img/icon-github.png'
@@ -135,9 +134,10 @@ export default function PeerCard({ space, ethAddress, configureStream, createNew
           dmThread.length > 0 ? 
 
               <ConnectButton onClick={async () => {
-                  console.log(dmThread[0].message.split(' ')[3])
-                  const thread = await space.joinThreadByAddress(dmThread[0].message.split(' ')[3])
+                  console.log(dmThread[0].message.split(' ')[1])
+                  const thread = await space.joinThreadByAddress(dmThread[0].message.split(' ')[1])
                   console.log("joined thread: " + thread)
+                  await thread.post('got it!')
                   const posts = await thread.getPosts()
                   console.log(posts)
                   }}>
@@ -148,8 +148,8 @@ export default function PeerCard({ space, ethAddress, configureStream, createNew
                   const thread = await space.createConfidentialThread('stream-dms-' + ethAddress)
                   await thread.addMember(ethAddress)
                   await thread.post('hey, just created a thread with you...')
-                  const newThread = { threadAddress: thread.address, sender: account, recipient: '0x8aDa904a7Df2088024eabD0de41a880AD9ECe4d3' }
-                  console.log("new thread created: " + newThread)
+                  const newThread = { threadAddress: thread.address, sender: account, recipient: ethAddress }
+                  console.log(newThread)
                   createNewConfidentialThread(newThread)}}>
                 Connect
               </ConnectButton>

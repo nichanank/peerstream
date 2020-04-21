@@ -1,6 +1,7 @@
 import { ethers } from 'ethers'
 import { addresses, abis } from "@sablier-app/contracts";
 import UncheckedJsonRpcSigner from './signer'
+import Box from '3box'
 // import { formatFixed } from '@uniswap/sdk'
 
 const ETHERSCAN_PREFIXES = {
@@ -105,6 +106,29 @@ export async function getTokenSymbol(tokenAddress, library) {
       throw error
     })
 }
+
+//attempting use hook into the box and space instance
+export async function getBox(library, account) {
+  const box = await Box.openBox(account, library.provider)
+  console.log(box)
+  const space = await box.openSpace('stream')
+  console.log(space)
+  return { box, space }
+}
+
+// export async function getUnopenedBox(library, account) {
+//     const box = await Box.openBox(account, library.provider)
+//     await box.syncDone
+//     console.log(box)
+// }
+
+// export async function getOpenedBox(library, account) {
+//   const space = await boxInstance.openSpace('stream')
+//   await space.syncDone
+//   console.log(space)
+//   return space
+// }
+
 
 // get token decimals
 export async function getTokenDecimals(tokenAddress, library) {

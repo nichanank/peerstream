@@ -4,58 +4,10 @@ import styled from 'styled-components'
 import Box from '3box'
 import PeerCard from '../../components/PeerCard'
 import StreamConfigModal from '../../components/StreamConfigModal'
+import { useBox } from '../../hooks/'
+import { Page, Jumbotron, JumbotronColumn, MainHeader, OneLinerContainer, OneLiner, SubOneLiner } from '../../theme/components'
 
-const MOCK_PEER_LIST = ['0xdbF14da8949D157B57acb79f6EEE62412b210900', '0xdbF14da8949D157B57acb79f6EEE62412b210900', '0xdbF14da8949D157B57acb79f6EEE62412b210900', '0xdbF14da8949D157B57acb79f6EEE62412b210900']
-
-const Page = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin: 0 0 0 0;
-`
-
-const Jumbotron = styled.div`
-  position: relative;
-  width: 100vw;
-  height: 581px;
-  background: linear-gradient(180deg, #76B39D 0%, rgba(255, 255, 255, 0) 100%), #F9F8EB;
-`
-
-const MainHeader = styled.h1`
-  color: black;  
-  font-weight: 600;
-  font-size: 1.5rem;
-  padding-top: 4px;
-  letter-spacing: 1px
-`
-
-const OneLinerContainer = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100vw;
-  height: 376px;
-  background: #F9F8EB;
-`
-
-const OneLiner = styled.h3`
-  font-family: Ubuntu Helvetica;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 3.5rem; 
-  text-align: center;
-  color: #155E63;
-`
-
-const SubOneLiner = styled.h4`
-  font-family: Ubuntu Helvetica;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 1.5rem;
-  text-align: center;
-  color: #155E63;
-`
+const MOCK_PEER_LIST = ['0xdbF14da8949D157B57acb79f6EEE62412b210900', '0x8aDa904a7Df2088024eabD0de41a880AD9ECe4d3', '0xdbF14da8949D157B57acb79f6EEE62412b210900', '0xdbF14da8949D157B57acb79f6EEE62412b210900']
 
 //design the discover container
 const DiscoverContainer = styled.div`
@@ -78,6 +30,8 @@ const Description = styled.p`
 export function Discover() {
 
   const { library, account } = useWeb3React()
+
+  // const { box, space } = useBox()
 
   const [box, setBox] = useState({})
   const [space, setSpace] = useState({})
@@ -132,7 +86,8 @@ export function Discover() {
     setPosts(posts)
 
     posts.map((post) => console.log(post.message))
-    const dms = posts.filter((post) => post.message.split(' ')[1] === account || post.message.split(' ')[2] === account)
+    const dms = posts.filter((post) => post.message.split(' ')[2] === account || post.message.split(' ')[3] === account)
+    console.log(dms)
     setUserDms(dms)
 
     await thread.onUpdate(async()=> {
@@ -147,8 +102,8 @@ export function Discover() {
   }
 
   function checkIfDmAlreadyExists(address) {
-    return userDms.filter((dm) => (dm.message.split(' ')[1] === address|| 
-                                  (dm.message.split(' ')[2] === address)))
+    return userDms.filter((dm) => (dm.message.split(' ')[2] === address|| 
+                                  (dm.message.split(' ')[3] === address)))
   }
 
   //populate the discover list from ethAddresses that have signed up to be a peer. this should read from a public thread
@@ -189,19 +144,29 @@ export function Discover() {
     return (
       <Page>
       <Jumbotron>
-        <MainHeader>Find your mentor</MainHeader>
-        <button onClick={async () => {
-          const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
-          setThread(() => getAppsThread(thread))
-        }
-      }>Read app thread</button>
-      <button onClick={async () => {
-          const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
-          await thread.post("careers, investment, networking")
+        <JumbotronColumn>
+          <MainHeader>Find your</MainHeader>
+        </JumbotronColumn>
+        <JumbotronColumn>
+          <button onClick={async () => {
+            const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
+            
+            await thread.deletePost("zdpuAmP2BEe9fRiwF5VSKrcJwCP9pec3f9XWw9dNAbwUPDwHj")
+            await thread.deletePost("zdpuAqEoTaEcNR7CJEnf33KpdTE5JjmV5zL4zGR4dXGGqjgmP")
+            await thread.deletePost("zdpuAyg7pTrjAT8ki2ouekZt1kWdWFnePKgykXsNyf5cduSy8")
+            await thread.deletePost("zdpuAkWo9AcZY6F2ZR2mKp9nihcuXQXYC2Rpxb5CuV8L6twVh")
+            await thread.deletePost("zdpuAnuFFbznkqVCsjQ3RUcUMWkgeEECruCKH483chUCNRTYW")
 
-          setThread(() => getAppsThread(thread))
-        }
-      }>Post to thread</button>
+            
+            setThread(() => getAppsThread(thread))
+               
+            }}>
+            Read app thread</button>
+          <button onClick={async () => {
+            const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
+            await thread.post("careers, investment, networking")
+          setThread(() => getAppsThread(thread))}}>Post to thread</button>
+        </JumbotronColumn>
       </Jumbotron>
       <OneLinerContainer>
         <OneLiner>Someone here might be able to help you...</OneLiner>

@@ -10,10 +10,11 @@ import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "@apollo/react-hooks";
 import "./index.css";
 import ThemeProvider, { GlobalStyle } from './theme'
-// import LocalStorageContextProvider, { Updater as LocalStorageContextUpdater } from './contexts/LocalStorage'
+
 import ApplicationContextProvider, { Updater as ApplicationContextUpdater } from './contexts/Application'
-// import TransactionContextProvider, { Updater as TransactionContextUpdater } from './contexts/Transactions'
 import TokensContextProvider, { Updater as TokensContextUpdater } from './contexts/Tokens'
+// import LocalStorageContextProvider, { Updater as LocalStorageContextUpdater } from './contexts/LocalStorage'
+// import TransactionContextProvider, { Updater as TransactionContextUpdater } from './contexts/Transactions'
 
 require('./App.css')
 
@@ -66,7 +67,6 @@ ReactDOM.render(
               {/* <GlobalStyle /> */}
               <ApolloProvider client={client}>
                 <App />
-                {/* <div>hi</div> */}
               </ApolloProvider>
           </ThemeProvider>
           </ContextProviders>

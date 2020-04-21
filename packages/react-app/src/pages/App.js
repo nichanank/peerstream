@@ -8,9 +8,7 @@ import { useWeb3React } from '@web3-react/core'
 import Web3ReactManager from '../components/Web3ReactManager'
 
 import Header from '../components/Header'
-// import Footer from '../components/Footer'
-
-import { isAddress } from '../utils'
+import Footer from '../components/Footer'
 
 const AppWrapper = styled.div`
   display: flex;
@@ -82,7 +80,7 @@ export default function App() {
               </Body>
             </BodyWrapper>
             <FooterWrapper>
-              {/* <Footer /> */}
+              <Footer />
             </FooterWrapper>
           </BrowserRouter>
         </AppWrapper>

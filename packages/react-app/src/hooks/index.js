@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useWeb3React as useWeb3ReactCore } from '@web3-react/core'
 import { injected } from '../connectors'
 import { NetworkContextName } from '../constants'
-import { getContract, getERC20Contract, getEvents, getStreamEventsBetween, isAddress } from '../utils'
+import { getContract, getERC20Contract, getEvents, getStreamEventsBetween, getBox, isAddress } from '../utils'
 import copy from 'copy-to-clipboard'
 
 export function useWeb3React() {
@@ -110,6 +110,18 @@ export function useERC20Contract(tokenAddress, withSignerIfPossible = true) {
       return null
     }
   }, [tokenAddress, library, withSignerIfPossible, account])
+}
+
+export function useBox(withSignerIfPossible = true) {
+  const { library, account } = useWeb3React()
+
+  return useMemo(() => {
+    try {
+      return getBox(library, withSignerIfPossible ? account : undefined)
+    } catch {
+      return null
+    }
+  }, [library, withSignerIfPossible, account])
 }
 
 export function useStreamEventsBetween(sender, recipient, withSignerIfPossible = true) {
