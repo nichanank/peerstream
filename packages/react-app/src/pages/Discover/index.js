@@ -83,12 +83,13 @@ export function Discover() {
   const [space, setSpace] = useState({})
   const [posts, setPosts] = useState([])
   const [thread, setThread] = useState({})
+  const [userDms, setUserDms] = useState([])
   const [loading, setLoading] = useState(true)
   const [streamConfigModalIsOpen, setStreamConfigModalIsOpen] = useState(false)
 
   // create a 3box instance and open space
   useEffect(() => {
-    setLoading(true)
+
     async function openBox() {
       const box = await Box.openBox(account, library.provider)
       await box.syncDone
@@ -101,11 +102,18 @@ export function Discover() {
       console.log(space)
       return space
     }
-    openBox(account, library.provider).then((box) => {
-      setBox(box)
-      openSpace(box).then((space) => setSpace(space))
-      setLoading(false)
-    })
+
+    const timer = setTimeout(() => {
+      setLoading(true)
+      console.log('opening box...')
+      openBox(account, library.provider).then((box) => {
+        setBox(box)
+        openSpace(box).then((space) => setSpace(space))
+        setLoading(false)
+      })
+    }, 25000);
+    return () => clearTimeout(timer);
+
   }, [account, library.provider])
   
   //aysync retrieve people who have signed up to be peers and set peerList to this
@@ -123,6 +131,10 @@ export function Discover() {
     console.log(posts)
     setPosts(posts)
 
+    posts.map((post) => console.log(post.message))
+    const dms = posts.filter((post) => post.message.split(' ')[1] === account || post.message.split(' ')[2] === account)
+    setUserDms(dms)
+
     await thread.onUpdate(async()=> {
       const posts = await thread.getPosts();
       console.log(posts)
@@ -131,9 +143,12 @@ export function Discover() {
   }
 
   async function recordNewConfidentialThread(newThread) {
-    await thread.post("dm-start " + newThread.account + " " + newThread.recipient + " " + newThread.postId)
-    // const posts = await thread.getPosts()
-    // setPosts(posts)
+    await thread.post("dm-created " + newThread.threadAddress + " " + newThread.sender + " " + newThread.recipient)
+  }
+
+  function checkIfDmAlreadyExists(address) {
+    return userDms.filter((dm) => (dm.message.split(' ')[1] === address|| 
+                                  (dm.message.split(' ')[2] === address)))
   }
 
   //populate the discover list from ethAddresses that have signed up to be a peer. this should read from a public thread
@@ -154,11 +169,18 @@ export function Discover() {
       return MOCK_PEER_LIST.map((peer, index) => {
         return(
           <React.Fragment key={index}>
-            <PeerCard ethAddress={peer} space={space} box={box} mainThread={thread} createNewConfidentialThread={() => recordNewConfidentialThread()} configureStream={() => setStreamConfigModalIsOpen(true)} ></PeerCard> 
-          <StreamConfigModal 
-              recipient={peer}
-              isOpen={streamConfigModalIsOpen}
-              onDismiss={() => setStreamConfigModalIsOpen(false)} />
+            <PeerCard ethAddress={peer} 
+                      space={space} 
+                      box={box}
+                      mainThread={thread}
+                      dmThread={checkIfDmAlreadyExists(peer)}
+                      createNewConfidentialThread={(newThread) => recordNewConfidentialThread(newThread)}
+                      configureStream={() => setStreamConfigModalIsOpen(true)} >
+            </PeerCard> 
+            <StreamConfigModal 
+                recipient={peer}
+                isOpen={streamConfigModalIsOpen}
+                onDismiss={() => setStreamConfigModalIsOpen(false)} />
           </React.Fragment>
           )
       })
@@ -169,21 +191,11 @@ export function Discover() {
       <Jumbotron>
         <MainHeader>Find your mentor</MainHeader>
         <button onClick={async () => {
-          // const thread = await space.joinThread("peer_list", {
-          //   firstModerator: account,
-          //   members: true
-          // })
           const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
-          // await thread.post("web3, solidity, reactJS")
-
           setThread(() => getAppsThread(thread))
         }
       }>Read app thread</button>
       <button onClick={async () => {
-          // const thread = await space.joinThread("peer_list", {
-          //   firstModerator: account,
-          //   members: true
-          // })
           const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
           await thread.post("careers, investment, networking")
 

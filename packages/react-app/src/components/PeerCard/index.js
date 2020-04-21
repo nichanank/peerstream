@@ -3,8 +3,6 @@ import { useWeb3React } from '@web3-react/core'
 import Box from '3box'
 import styled from 'styled-components'
 import { ethers } from 'ethers'
-import { useContract } from '../../hooks'
-import { calculateGasMargin} from '../../utils'
 
 //socal icons
 import github_icon from '../../assets/img/icon-github.png'
@@ -16,8 +14,6 @@ const IPFS_URL = 'https://ipfs.infura.io/ipfs/'
 const TWITTER_URL = 'https://twitter.com/'
 const GITHUB_URL = 'https://github.com/'
 const THREEBOX_URL = 'https://3box.io/'
-
-const GAS_MARGIN = ethers.utils.bigNumberify(1000)
 
 const Card = styled.div`  
   display: flex;
@@ -82,11 +78,10 @@ const ConnectButton = styled.button`
   color: #FFFFFF;
 `
 
-export default function PeerCard({ space, box, ethAddress, configureStream, createNewConfidentialThread }) {
+export default function PeerCard({ space, ethAddress, configureStream, createNewConfidentialThread, dmThread }) {
 
-  const { library, account } = useWeb3React()
-  const sablier = useContract("Sablier")
-
+  const { account } = useWeb3React()
+  
   const [showLoader, setShowLoader] = useState(false)
   const [profile, setProfile] = useState({})
   const [profileImg, setProfileImg] = useState('')
@@ -135,27 +130,37 @@ export default function PeerCard({ space, box, ethAddress, configureStream, crea
           {profile.website ? <a href={profile.website}><SocialIcon src={website_icon} alt={profile.website}></SocialIcon></a> : null}
           <a href={THREEBOX_URL + ethAddress}><SocialIcon src={threeBox_icon} alt={ethAddress}></SocialIcon></a>
         </SocialIconContainer>
-        { Object.keys(space).length > 0 ? <ConnectButton onClick={async () => {
-            const thread = await space.createConfidentialThread('stream-dms-' + ethAddress)
-            // const thread = await space.joinThreadByAddress('stream-dms-' + ethAddress)
-            await thread.addMember(ethAddress)
-            console.log('added member: ' + ethAddress)
-            await thread.post('hey, just created a thread with you...')
-            const posts = await thread.getPosts()
-            const latestPost = { ...posts[posts.length-1], sender: account, recipient: ethAddress }
-            console.log(latestPost)
-            createNewConfidentialThread(latestPost)
-          }}>Connect</ConnectButton> : 
+        { Object.keys(space).length > 0 ? 
+
+          dmThread.length > 0 ? 
+
+              <ConnectButton onClick={async () => {
+                  console.log(dmThread[0].message.split(' ')[3])
+                  const thread = await space.joinThreadByAddress(dmThread[0].message.split(' ')[3])
+                  console.log("joined thread: " + thread)
+                  const posts = await thread.getPosts()
+                  console.log(posts)
+                  }}>
+                Send Message
+              </ConnectButton> :
+
+              <ConnectButton onClick={async () => {
+                  const thread = await space.createConfidentialThread('stream-dms-' + ethAddress)
+                  await thread.addMember(ethAddress)
+                  await thread.post('hey, just created a thread with you...')
+                  const newThread = { threadAddress: thread.address, sender: account, recipient: '0x8aDa904a7Df2088024eabD0de41a880AD9ECe4d3' }
+                  console.log("new thread created: " + newThread)
+                  createNewConfidentialThread(newThread)}}>
+                Connect
+              </ConnectButton>
+          :
             <button onClick={() => console.log(space)}>connect to 3box to continue</button> 
           }
-          { Object.keys(space).length >= 0 ? <ConnectButton onClick={configureStream}
-            // const estimatedGas = await sablier.estimate.createStream(ethAddress)
-            // sablier
-            //   .createStream(ethAddress, {
-            //     gasLimit: calculateGasMargin(estimatedGas, GAS_MARGIN)
-            //   })
-          >
-          Start Stream</ConnectButton> : <button onClick={() => console.log('boo')}>connect to 3box to continue</button> }
+
+
+          { Object.keys(space).length >= 0 ? 
+              <ConnectButton onClick={configureStream}>Start Stream</ConnectButton> : 
+              <button onClick={() => console.log('boo')}>connect to 3box to continue</button> }
       </Card>
     )
 }
