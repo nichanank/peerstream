@@ -133,10 +133,10 @@ export default function PeerCard({ space, ethAddress, configureStream, createNew
 
           dmThread.length > 0 ? 
 
+              // if a DM thread with this peer already exists, join it
               <ConnectButton onClick={async () => {
                   console.log(dmThread[0].message.split(' ')[1])
                   const thread = await space.joinThreadByAddress(dmThread[0].message.split(' ')[1])
-                  console.log("joined thread: " + thread)
                   await thread.post('got it!')
                   const posts = await thread.getPosts()
                   console.log(posts)
@@ -144,17 +144,17 @@ export default function PeerCard({ space, ethAddress, configureStream, createNew
                 Send Message
               </ConnectButton> :
 
+              // if a DM thread with this peer does not already exist, create one
               <ConnectButton onClick={async () => {
                   const thread = await space.createConfidentialThread('stream-dms-' + ethAddress)
                   await thread.addMember(ethAddress)
                   await thread.post('hey, just created a thread with you...')
                   const newThread = { threadAddress: thread.address, sender: account, recipient: ethAddress }
-                  console.log(newThread)
                   createNewConfidentialThread(newThread)}}>
                 Connect
               </ConnectButton>
           :
-            <button onClick={() => console.log(space)}>connect to 3box to continue</button> 
+            <ConnectButton onClick={() => console.log(space)}>Connect 3Box</ConnectButton> 
           }
 
 

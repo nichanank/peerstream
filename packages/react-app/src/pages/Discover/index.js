@@ -70,8 +70,8 @@ export function Discover() {
 
   }, [account, library.provider])
   
-  //aysync retrieve people who have signed up to be peers and set peerList to this
-  //people should be able to see the public thread without auth
+  //aysync retrieve people who have signed up to be peers
+  //TODO: change logic so that people should be able to see the public thread without auth?
   async function getAppsThread(thread) {
     console.log('getting into apps thread')
     if (!thread) {
@@ -151,13 +151,12 @@ export function Discover() {
           <button onClick={async () => {
             const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
             
-            await thread.deletePost("zdpuAmP2BEe9fRiwF5VSKrcJwCP9pec3f9XWw9dNAbwUPDwHj")
-            await thread.deletePost("zdpuAqEoTaEcNR7CJEnf33KpdTE5JjmV5zL4zGR4dXGGqjgmP")
-            await thread.deletePost("zdpuAyg7pTrjAT8ki2ouekZt1kWdWFnePKgykXsNyf5cduSy8")
-            await thread.deletePost("zdpuAkWo9AcZY6F2ZR2mKp9nihcuXQXYC2Rpxb5CuV8L6twVh")
-            await thread.deletePost("zdpuAnuFFbznkqVCsjQ3RUcUMWkgeEECruCKH483chUCNRTYW")
+            await thread.deletePost("zdpuAyg3RoJyDUE71rYeW2ycu3xCS9r4eKJQ5nHLyNbDNToQL")
+            await thread.deletePost("zdpuAssNNDZXyncxcAMxByAdEVMq9iULYvPuvRjbcrTcaMukn")
+            await thread.deletePost("zdpuAscFkyYbEKvatCEYuWwCYAYsFNmKAEJsrSeJGpdMpFGWw")
+            await thread.deletePost("zdpuAq7vtdYWheLET1jH9tZsR7yVtapk7iF3XRXRzDRxhSxi4")
+            await thread.deletePost("zdpuAvikdjHhYP4nzuX28juZjoBfdcRNKv2eXtegFhN8a2DWU")
 
-            
             setThread(() => getAppsThread(thread))
                
             }}>

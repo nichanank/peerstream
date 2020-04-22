@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useWeb3React } from '@web3-react/core'
 import { Link, withRouter } from 'react-router-dom'
 import { darken } from 'polished'
 import { HeaderNavigationLink } from '../../theme'
@@ -24,15 +25,19 @@ const StyledLink = styled(Link)`
 `
 
 function HeaderNavigation() {
+
+  const { library } = useWeb3React()
   
     return (
       <>
         <HeaderNavigationLink>
           <StyledLink to={"/home"} id="navigation">Home</StyledLink>
         </HeaderNavigationLink>
-        <HeaderNavigationLink>
-          <StyledLink to={"/discover"} id="navigation">Discover</StyledLink>
-        </HeaderNavigationLink>
+        {library ? 
+          <HeaderNavigationLink>
+            <StyledLink to={"/discover"} id="navigation">Discover</StyledLink>
+          </HeaderNavigationLink>
+        : null}
       </>
     )
 }

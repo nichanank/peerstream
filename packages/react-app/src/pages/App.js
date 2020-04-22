@@ -73,7 +73,7 @@ export default function App() {
                   <Suspense fallback={null}>
                     <Route exact path="/" component={Home} />
                     <Route path={"/home"} component={Home} />
-                    <Route path={"/discover"} component={Discover} />
+                    { context.active ? <Route path={"/discover"} component={Discover} /> : null }
                     <Route path={"/meeting"} component={Meeting} />
                   </Suspense>
                 </Web3ReactManager>
