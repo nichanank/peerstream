@@ -5,6 +5,7 @@ import Box from '3box'
 import PeerCard from '../../components/PeerCard'
 import StreamConfigModal from '../../components/StreamConfigModal'
 import PeerSignUpModal from '../../components/PeerSignUpModal'
+import PeerChatModal from '../../components/PeerChatModal'
 import { useBox } from '../../hooks/'
 import { Page, Jumbotron, JumbotronColumn, MainHeader, OneLinerContainer, OneLiner, SubOneLiner } from '../../theme/components'
 
@@ -40,7 +41,11 @@ export function Discover() {
   const [userDms, setUserDms] = useState([])
   const [loading, setLoading] = useState(true)
   const [peerSignUpModalIsOpen, setPeerSignUpModalIsOpen] = useState(false)
+  const [peerChatModalIsOpen, setPeerChatModalIsOpen] = useState(false)
   const [streamConfigModalIsOpen, setStreamConfigModalIsOpen] = useState(false)
+
+  const [previousPrivateMessages, setPreviousPrivateMessages] = useState([])
+  const [activePrivateThread, setActivePrivateThread] = useState({})
 
   // create a 3box instance and open space
   useEffect(() => {
@@ -56,11 +61,6 @@ export function Discover() {
       await space.syncDone
       console.log(space)
       return space
-    }
-
-    async function openAppThread(spaceInstance) {
-      const thread = await spaceInstance.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
-      return thread
     }
 
     const timer = setTimeout(() => {
@@ -122,6 +122,11 @@ export function Discover() {
                                   (dm.message.split(' ')[3] === address)))
   }
 
+  function setActiveChat(thread, posts) {
+    setActivePrivateThread(thread)
+    setPreviousPrivateMessages(posts)
+  }
+
   //populate the discover list from ethAddresses that have signed up to be a peer. this should read from a public thread
   function populateDiscover() {
       if (peers.length > 0) {
@@ -134,12 +139,19 @@ export function Discover() {
                 mainThread={thread}
                 dmThread={checkIfDmAlreadyExists(peer.address)}
                 createNewConfidentialThread={(newThread) => recordNewConfidentialThread(newThread)}
+                setActiveChat={(activePrivateThread, previousPosts) => setActiveChat(activePrivateThread, previousPosts)}
+                openChatModal={() => setPeerChatModalIsOpen(true)}
                 configureStream={() => setStreamConfigModalIsOpen(true)} >
               </PeerCard> 
             <StreamConfigModal 
                 recipient={peer.address}
                 isOpen={streamConfigModalIsOpen}
                 onDismiss={() => setStreamConfigModalIsOpen(false)} />
+            <PeerChatModal 
+                privateThread={activePrivateThread}
+                previousMessages={previousPrivateMessages}
+                isOpen={peerChatModalIsOpen}
+                onDismiss={() => setPeerChatModalIsOpen(false)} />
             </React.Fragment>
             )
         })
@@ -156,7 +168,7 @@ export function Discover() {
           <button onClick={async () => {
             const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
 
-            await thread.deletePost("zdpuB27gHwdiXQnkqbmzYAvrDAg6pPsaUUnhXnzd19zMuEDvD")
+            // await thread.deletePost("zdpuB27gHwdiXQnkqbmzYAvrDAg6pPsaUUnhXnzd19zMuEDvD")
 
             setThread(() => getAppsThread(thread))
                

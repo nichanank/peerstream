@@ -77,7 +77,7 @@ const ConnectButton = styled.button`
   color: #FFFFFF;
 `
 
-export default function PeerCard({ space, peer, configureStream, createNewConfidentialThread, dmThread }) {
+export default function PeerCard({ space, peer, configureStream, createNewConfidentialThread, dmThread, setActiveChat, openChatModal }) {
 
   const { account } = useWeb3React()
   
@@ -86,19 +86,6 @@ export default function PeerCard({ space, peer, configureStream, createNewConfid
   const [profileImg, setProfileImg] = useState('')
   const [verifiedAccounts, setVerifiedAccounts] = useState([])
   const [loading, setLoading] = useState(true)
-
-  /*
-    Note: to avoid long wait times users should sign in with 3Box first before opening a space
-    1. Open box, wait for box syncing to be done
-    2. Open space, wait for space syncing to be done
-    3. "Connect" should open a confidential thread with the peer
-    - Question: how does someone know when they've been contacted?
-
-    1. Mentee clicks "connect", creates a confidential thread with the person
-    2. Opens a chat box?
-
-  */
-
   
   // populate card with 3box profile from given ethereum address
   useEffect(() => {
@@ -136,11 +123,10 @@ export default function PeerCard({ space, peer, configureStream, createNewConfid
 
               // if a DM thread with this peer already exists, join it
               <ConnectButton onClick={async () => {
-                  console.log(dmThread[0].message.split(' ')[1])
                   const thread = await space.joinThreadByAddress(dmThread[0].message.split(' ')[1])
-                  await thread.post('got it!')
                   const posts = await thread.getPosts()
-                  console.log(posts)
+                  setActiveChat(thread, posts)
+                  openChatModal()
                   }}>
                 Send Message
               </ConnectButton> :
@@ -149,9 +135,11 @@ export default function PeerCard({ space, peer, configureStream, createNewConfid
               <ConnectButton onClick={async () => {
                   const thread = await space.createConfidentialThread('stream-dms-' + peer.address)
                   await thread.addMember(peer.address)
-                  await thread.post('hey, just created a thread with you...')
+                  const posts = await thread.getPosts()
                   const newThread = { threadAddress: thread.address, sender: account, recipient: peer.address }
-                  createNewConfidentialThread(newThread)}}>
+                  createNewConfidentialThread(newThread)
+                  setActiveChat(thread, posts)
+                  openChatModal()}}>
                 Connect
               </ConnectButton>
           :
