@@ -77,7 +77,7 @@ const ConnectButton = styled.button`
   color: #FFFFFF;
 `
 
-export default function PeerCard({ space, ethAddress, configureStream, createNewConfidentialThread, dmThread }) {
+export default function PeerCard({ space, peer, configureStream, createNewConfidentialThread, dmThread }) {
 
   const { account } = useWeb3React()
   
@@ -104,30 +104,31 @@ export default function PeerCard({ space, ethAddress, configureStream, createNew
   useEffect(() => {
     setLoading(true)
     async function fetchProfile() {
-      const profile = await Box.getProfile(ethAddress)
+      const profile = await Box.getProfile(peer.address)
       return profile
     }
     async function fetchVerifiedAccounts(profile) {
       const accounts = await Box.getVerifiedAccounts(profile)
       return accounts
     }
-    fetchProfile(ethAddress).then((result) => {
+    fetchProfile(peer.address).then((result) => {
       setProfile(result)
       setProfileImg(result.image[0].contentUrl['/'])
       fetchVerifiedAccounts(result).then((accounts) => setVerifiedAccounts(accounts))
       setLoading(false)
     })
-  }, [ethAddress])
+  }, [peer])
   
     return (
       <Card>
         {profileImg !== "" && !loading ? <ProfilePic src={IPFS_URL + profileImg} alt={profileImg}></ProfilePic> : <ProfilePic src={threeBox_icon} alt={profileImg}></ProfilePic>}
         <Name>{profile.name}</Name>
+          <p>{peer.message}</p>
         <SocialIconContainer>
           {verifiedAccounts.github ? <a href={GITHUB_URL + verifiedAccounts.github.username}><SocialIcon src={github_icon} alt={verifiedAccounts.github.proof}></SocialIcon></a> : null}
           {verifiedAccounts.twitter ? <a href={TWITTER_URL + verifiedAccounts.twitter.username}><SocialIcon src={twitter_icon} alt={verifiedAccounts.twitter.proof}></SocialIcon></a> : null}
           {profile.website ? <a href={profile.website}><SocialIcon src={website_icon} alt={profile.website}></SocialIcon></a> : null}
-          <a href={THREEBOX_URL + ethAddress}><SocialIcon src={threeBox_icon} alt={ethAddress}></SocialIcon></a>
+          <a href={THREEBOX_URL + peer.address}><SocialIcon src={threeBox_icon} alt={peer.address}></SocialIcon></a>
         </SocialIconContainer>
         { Object.keys(space).length > 0 ? 
 
@@ -146,10 +147,10 @@ export default function PeerCard({ space, ethAddress, configureStream, createNew
 
               // if a DM thread with this peer does not already exist, create one
               <ConnectButton onClick={async () => {
-                  const thread = await space.createConfidentialThread('stream-dms-' + ethAddress)
-                  await thread.addMember(ethAddress)
+                  const thread = await space.createConfidentialThread('stream-dms-' + peer.address)
+                  await thread.addMember(peer.address)
                   await thread.post('hey, just created a thread with you...')
-                  const newThread = { threadAddress: thread.address, sender: account, recipient: ethAddress }
+                  const newThread = { threadAddress: thread.address, sender: account, recipient: peer.address }
                   createNewConfidentialThread(newThread)}}>
                 Connect
               </ConnectButton>

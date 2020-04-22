@@ -4,10 +4,9 @@ import styled from 'styled-components'
 import Box from '3box'
 import PeerCard from '../../components/PeerCard'
 import StreamConfigModal from '../../components/StreamConfigModal'
+import PeerSignUpModal from '../../components/PeerSignUpModal'
 import { useBox } from '../../hooks/'
 import { Page, Jumbotron, JumbotronColumn, MainHeader, OneLinerContainer, OneLiner, SubOneLiner } from '../../theme/components'
-
-const MOCK_PEER_LIST = ['0xdbF14da8949D157B57acb79f6EEE62412b210900', '0x8aDa904a7Df2088024eabD0de41a880AD9ECe4d3', '0xdbF14da8949D157B57acb79f6EEE62412b210900', '0xdbF14da8949D157B57acb79f6EEE62412b210900']
 
 //design the discover container
 const DiscoverContainer = styled.div`
@@ -37,8 +36,10 @@ export function Discover() {
   const [space, setSpace] = useState({})
   const [posts, setPosts] = useState([])
   const [thread, setThread] = useState({})
+  const [peers, setPeers] = useState([])
   const [userDms, setUserDms] = useState([])
   const [loading, setLoading] = useState(true)
+  const [peerSignUpModalIsOpen, setPeerSignUpModalIsOpen] = useState(false)
   const [streamConfigModalIsOpen, setStreamConfigModalIsOpen] = useState(false)
 
   // create a 3box instance and open space
@@ -55,6 +56,11 @@ export function Discover() {
       await space.syncDone
       console.log(space)
       return space
+    }
+
+    async function openAppThread(spaceInstance) {
+      const thread = await spaceInstance.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
+      return thread
     }
 
     const timer = setTimeout(() => {
@@ -90,9 +96,19 @@ export function Discover() {
     console.log(dms)
     setUserDms(dms)
 
+    posts.map((post) => console.log(post.message))
+    const peers = posts.filter((post) => post.message.split(' ')[0] === 'peer-signup:')
+                       .map(post => ({address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
+    console.log(peers)
+    setPeers(peers)
+
     await thread.onUpdate(async()=> {
       const posts = await thread.getPosts();
-      console.log(posts)
+      const dms = posts.filter((post) => post.message.split(' ')[2] === account || post.message.split(' ')[3] === account)
+      const peers = posts.filter((post) => post.message.split(' ')[0] === 'peer-signup:')
+                       .map(post => ({address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
+      setPeers(peers)
+      setUserDms(dms)
       setPosts(posts);
     })
   }
@@ -108,37 +124,26 @@ export function Discover() {
 
   //populate the discover list from ethAddresses that have signed up to be a peer. this should read from a public thread
   function populateDiscover() {
-      // if (peers.length > 0) {
-      //   return peers.map((peer, index) => {
-      //     return(
-      //       <React.Fragment key={index}>
-      //         <PeerCard ethAddress={peer} space={space} box={box} configureStream={() => setStreamConfigModalIsOpen(true)} ></PeerCard> 
-      //       <StreamConfigModal 
-      //           recipient={peer}
-      //           isOpen={streamConfigModalIsOpen}
-      //           onDismiss={() => setStreamConfigModalIsOpen(false)} />
-      //       </React.Fragment>
-      //       )
-      //   })
-      // } return null
-      return MOCK_PEER_LIST.map((peer, index) => {
-        return(
-          <React.Fragment key={index}>
-            <PeerCard ethAddress={peer} 
-                      space={space} 
-                      box={box}
-                      mainThread={thread}
-                      dmThread={checkIfDmAlreadyExists(peer)}
-                      createNewConfidentialThread={(newThread) => recordNewConfidentialThread(newThread)}
-                      configureStream={() => setStreamConfigModalIsOpen(true)} >
-            </PeerCard> 
+      if (peers.length > 0) {
+        return peers.map((peer, index) => {
+          return(
+            <React.Fragment key={index}>
+              <PeerCard 
+                peer={peer}
+                space={space}
+                mainThread={thread}
+                dmThread={checkIfDmAlreadyExists(peer.address)}
+                createNewConfidentialThread={(newThread) => recordNewConfidentialThread(newThread)}
+                configureStream={() => setStreamConfigModalIsOpen(true)} >
+              </PeerCard> 
             <StreamConfigModal 
-                recipient={peer}
+                recipient={peer.address}
                 isOpen={streamConfigModalIsOpen}
                 onDismiss={() => setStreamConfigModalIsOpen(false)} />
-          </React.Fragment>
-          )
-      })
+            </React.Fragment>
+            )
+        })
+      } return loading ? <p>loading peers...</p> : <p>no peers yet, sign up to be one!</p>
     }
         
     return (
@@ -150,21 +155,20 @@ export function Discover() {
         <JumbotronColumn>
           <button onClick={async () => {
             const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
-            
-            await thread.deletePost("zdpuAyg3RoJyDUE71rYeW2ycu3xCS9r4eKJQ5nHLyNbDNToQL")
-            await thread.deletePost("zdpuAssNNDZXyncxcAMxByAdEVMq9iULYvPuvRjbcrTcaMukn")
-            await thread.deletePost("zdpuAscFkyYbEKvatCEYuWwCYAYsFNmKAEJsrSeJGpdMpFGWw")
-            await thread.deletePost("zdpuAq7vtdYWheLET1jH9tZsR7yVtapk7iF3XRXRzDRxhSxi4")
-            await thread.deletePost("zdpuAvikdjHhYP4nzuX28juZjoBfdcRNKv2eXtegFhN8a2DWU")
+
+            await thread.deletePost("zdpuB27gHwdiXQnkqbmzYAvrDAg6pPsaUUnhXnzd19zMuEDvD")
 
             setThread(() => getAppsThread(thread))
                
             }}>
             Read app thread</button>
-          <button onClick={async () => {
-            const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
-            await thread.post("careers, investment, networking")
-          setThread(() => getAppsThread(thread))}}>Post to thread</button>
+          
+          {Object.keys(thread).length > 0 ? <button onClick={() => setPeerSignUpModalIsOpen(true)}>Sign up to be a peer</button>  : null}
+
+          <PeerSignUpModal 
+                thread={thread}
+                isOpen={peerSignUpModalIsOpen}
+                onDismiss={() => setPeerSignUpModalIsOpen(false)} />
         </JumbotronColumn>
       </Jumbotron>
       <OneLinerContainer>
