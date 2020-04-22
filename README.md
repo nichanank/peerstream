@@ -15,6 +15,10 @@ Instead of having to wait 2 weeks or a month to get your paycheck, payment strea
 
 ## Development
 
+1. Clone this repository `git clone https://github.com/nichanank/peerstream.git`
+2. Install parent directory dependancies `npm i`
+3. Install app dependancies `cd packages/react-app && npm i`
+4. Bring up the app with `yarn start` and it should be running on `localhost:3000`
 
 
 ## About
