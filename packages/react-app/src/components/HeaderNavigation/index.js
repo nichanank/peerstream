@@ -38,6 +38,11 @@ function HeaderNavigation() {
             <StyledLink to={"/discover"} id="navigation">Discover</StyledLink>
           </HeaderNavigationLink>
         : null}
+        {library ? 
+          <HeaderNavigationLink>
+            <StyledLink to={"/meeting"} id="navigation">Meeting</StyledLink>
+          </HeaderNavigationLink>
+        : null}
       </>
     )
 }

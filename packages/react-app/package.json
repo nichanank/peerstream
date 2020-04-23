@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "3box": "^1.17.1",
+    "3box-chatbox-react": "^0.1.10",
     "@apollo/react-hooks": "^3.1.3",
     "@reach/dialog": "^0.10.0",
     "@reach/tooltip": "^0.10.0",
@@ -33,6 +34,7 @@
     "graphql": "^14.6.0",
     "jquery": "^3.5.0",
     "lodash": "^4.17.14",
+    "peerjs": "^1.2.0",
     "polished": "^3.5.1",
     "react": "16.12.0",
     "react-device-detect": "^1.11.14",
@@ -58,6 +60,7 @@
     "eslint": "^6.8.0",
     "eslint-plugin-flowtype": "^4.6.0",
     "jquery": "^3.5.0",
+    "opencollective-postinstall": "^2.0.2",
     "react-router-dom": "^5.1.2"
   },
   "eslintConfig": {

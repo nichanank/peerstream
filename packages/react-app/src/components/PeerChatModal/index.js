@@ -98,6 +98,19 @@ const TokenModalInfo = styled.div`
 `
 
 
+const RowLeft = styled.div`
+  ${({ theme }) => theme.flexRowNoWrap}
+  align-items : center;
+`
+
+const RowRight = styled.div`
+  ${({ theme }) => theme.flexColumnNoWrap};
+  align-items: flex-end;
+  color: gray;
+  font-size: 0.3rem;
+`
+
+
 const ModalRow = styled.div`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items: center;
@@ -147,10 +160,12 @@ export default function PeerChatModal({
   }
 
   function renderPreviousMessages() {
-    return previousMessages.map((message) => {
+    return previousMessages.reverse.map((message) => {
+      var sentOn = new Date(message.timestamp).toLocaleString('en-US')
       return (
         <ModalRow>
-          {message.message}
+          <RowLeft>{message.message}</RowLeft>
+          <RowRight>{sentOn}</RowRight>
         </ModalRow>
       )
     })
