@@ -136,6 +136,40 @@ export function useStreamEventsBetween(sender, recipient, withSignerIfPossible =
   }, [chainId, library, sender, recipient, withSignerIfPossible, account])
 }
 
+// Adapted from https://usehooks.com/useEventListener/
+export function useEventEmitter(eventName, handler, element = window){
+  // Create a ref that stores handler
+  const savedHandler = useRef();
+  
+  // Update ref.current value if handler changes.
+  // This allows our effect below to always get latest handler
+  // ithout us needing to pass it in effect deps array ...
+  //and potentially cause effect to re-run every render.
+  useEffect(() => {
+    savedHandler.current = handler;
+  }, [handler]);
+
+  useEffect(
+    () => {
+      // Make sure element supports `on` 
+      const isSupported = element && element.on;
+      if (!isSupported) return;
+      
+      // Create event listener that calls handler function stored in ref
+      const eventListener = event => savedHandler.current(event);
+      
+      // Add event listener
+      element.on(eventName, eventListener);
+      
+      // Remove on cleanup
+      return () => {
+        element.off(eventName, eventListener);
+      };
+    },
+    [eventName, element] // Re-run if eventName or element changes
+  );
+};
+
 export function useENSName(address) {
   const { library } = useWeb3React()
 
