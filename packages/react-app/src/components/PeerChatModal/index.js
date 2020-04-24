@@ -107,7 +107,7 @@ const RowRight = styled.div`
   ${({ theme }) => theme.flexColumnNoWrap};
   align-items: flex-end;
   color: gray;
-  font-size: 0.3rem;
+  font-size: 0.4rem;
 `
 
 
@@ -160,10 +160,10 @@ export default function PeerChatModal({
   }
 
   function renderPreviousMessages() {
-    return previousMessages.reverse.map((message) => {
-      var sentOn = new Date(message.timestamp).toLocaleString('en-US')
+    return previousMessages.map((message, index) => {
+      var sentOn = new Date(Date(message.timestamp)).toLocaleString('en-US', {timeZone: 'UTC'})
       return (
-        <ModalRow>
+        <ModalRow key={index}>
           <RowLeft>{message.message}</RowLeft>
           <RowRight>{sentOn}</RowRight>
         </ModalRow>

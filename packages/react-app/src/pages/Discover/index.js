@@ -48,36 +48,77 @@ export function Discover() {
   const [activePrivateThread, setActivePrivateThread] = useState({})
 
   // create a 3box instance and open space
+  // useEffect(() => {
+
+  //   async function openBox() {
+  //     const box = await Box.openBox(account, library.provider)
+  //     // await box.syncDone
+  //     console.log(box)
+  //     return box        
+  //   }
+  //   async function openSpace(boxInstance) {
+  //     const space = await boxInstance.openSpace('stream')
+  //     await space.syncDone
+  //     console.log(space)
+  //     return space
+  //   }
+
+  //   const timer = setTimeout(() => {
+  //     setLoading(true)
+  //     console.log('opening box...')
+  //     openBox(account, library.provider).then((box) => {
+  //       setBox(box)
+  //       openSpace(box).then((space) => setSpace(space))
+  //       setLoading(false)
+  //     })
+  //   }, 25000);
+  //   return () => clearTimeout(timer);
+
+  // }, [account, library.provider])
+
+  async function openBoxAndSyncSpace() {
+    const box = await Box.openBox(account, library.provider)
+    await box.syncDone
+    console.log(box)
+    setBox(box)
+    
+    const space = await box.openSpace('stream')
+    await space.syncDone
+    console.log(space)
+    setSpace(space)
+
+    const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
+
+    // await thread.deletePost("zdpuB27gHwdiXQnkqbmzYAvrDAg6pPsaUUnhXnzd19zMuEDvD")
+
+    setThread(() => getAppsThread(thread))
+  }
+
   useEffect(() => {
-
-    async function openBox() {
-      const box = await Box.openBox(account, library.provider)
-      await box.syncDone
-      console.log(box)
-      return box        
+    
+    async function getPosts(threadAddress) {
+      const posts = await Box.getThreadByAddress(threadAddress)
+      return posts
     }
-    async function openSpace(boxInstance) {
-      const space = await boxInstance.openSpace('stream')
-      await space.syncDone
-      console.log(space)
-      return space
-    }
+    
+    getPosts("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
+      .then((result) => {
+        setPosts(result)
+        // posts.map((post) => console.log(post.message))
+        const dms = posts.filter((post) => post.message.split(' ')[2] === account || post.message.split(' ')[3] === account)
+        // console.log(dms)
+        setUserDms(dms)
 
-    const timer = setTimeout(() => {
-      setLoading(true)
-      console.log('opening box...')
-      openBox(account, library.provider).then((box) => {
-        setBox(box)
-        openSpace(box).then((space) => setSpace(space))
-        setLoading(false)
+        // posts.map((post) => console.log(post.message))
+        const peers = posts.filter((post) => post.message.split(' ')[0] === 'peer-signup:')
+                          .map(post => ({address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
+        // console.log(peers)
+        setPeers(peers)
       })
-    }, 25000);
-    return () => clearTimeout(timer);
 
-  }, [account, library.provider])
+  }, [posts, account])
   
   //aysync retrieve people who have signed up to be peers
-  //TODO: change logic so that people should be able to see the public thread without auth?
   async function getAppsThread(thread) {
     console.log('getting into apps thread')
     if (!thread) {
@@ -85,21 +126,21 @@ export function Discover() {
       return;
     }
     setThread(thread)
-    console.log(thread)
+    // console.log(thread)
 
     const posts = await thread.getPosts();
-    console.log(posts)
+    // console.log(posts)
     setPosts(posts)
 
     posts.map((post) => console.log(post.message))
     const dms = posts.filter((post) => post.message.split(' ')[2] === account || post.message.split(' ')[3] === account)
-    console.log(dms)
+    // console.log(dms)
     setUserDms(dms)
 
     posts.map((post) => console.log(post.message))
     const peers = posts.filter((post) => post.message.split(' ')[0] === 'peer-signup:')
                        .map(post => ({address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
-    console.log(peers)
+    // console.log(peers)
     setPeers(peers)
 
     await thread.onUpdate(async()=> {
@@ -149,7 +190,7 @@ export function Discover() {
                 onDismiss={() => setStreamConfigModalIsOpen(false)} />
             <PeerChatModal 
                 privateThread={activePrivateThread}
-                previousMessages={previousPrivateMessages}
+                previousMessages={previousPrivateMessages.reverse()}
                 isOpen={peerChatModalIsOpen}
                 onDismiss={() => setPeerChatModalIsOpen(false)} />
             </React.Fragment>
@@ -176,6 +217,8 @@ export function Discover() {
             Read app thread</button>
           
           {Object.keys(thread).length > 0 ? <button onClick={() => setPeerSignUpModalIsOpen(true)}>Sign up to be a peer</button>  : null}
+          
+          <button onClick={() => openBoxAndSyncSpace()}>Open Box</button>
 
           <PeerSignUpModal 
                 thread={thread}

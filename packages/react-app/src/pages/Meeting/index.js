@@ -10,7 +10,7 @@ const VideoContainer = styled.div`
   width: 100vw;
   height: 70vh;
   padding-left: 7%;
-  padding-right: 7%;
+  padding-right: 2%;
 `
 
 const InformationContainer = styled.div`
