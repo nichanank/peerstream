@@ -1,14 +1,13 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import { ethers } from 'ethers'
-import { BigNumber}  from 'bignumber.js'
 import styled from 'styled-components'
 import { darken } from 'polished'
 import { isMobile } from 'react-device-detect'
 import escapeStringRegex from 'escape-string-regexp'
-import Select from 'react-select'
+import DateTimePicker from 'react-datetime-picker'
 import { useContract, useERC20Contract } from '../../hooks'
-import { calculateGasMargin, getStreamEventsBetween, isAddress } from '../../utils'
+import { calculateGasMargin, getStreamEventsBetween } from '../../utils'
 import { BorderlessInput } from '../../theme'
 import { useTokenDetails, useAllTokenDetails, INITIAL_TOKENS_CONTEXT } from '../../contexts/Tokens'
 import Modal from '../Modal'
@@ -19,70 +18,10 @@ import Circle from '../../assets/img/circle.svg'
 
 const GAS_MARGIN = ethers.utils.bigNumberify(1000)
 
-// ${({ theme }) => theme.flexRowNoWrap}
-//   padding: 4px 50px 4px 15px;
-//   margin-right: 15px;
-//   line-height: 0;
-//   height: 2rem;
-//   align-items: center;
-//   border-radius: 2.5rem;
-//   outline: none;
-//   cursor: pointer;
-//   user-select: none;
-//   background: ${({ theme }) => theme.tertiaryGreen};
-//   border: 1px solid ${({ theme }) => theme.primaryGreen};
-//   color: ${({ theme }) => theme.primaryGreen};
-//   option {
-//     color: ${({ theme }) => theme.primaryGreen};
-//     background: ${({ theme }) => theme.tertiaryGreen};
-//     overflow-y: scroll;
-//     display: flex;
-//     white-space: pre;
-//     min-height: 20px;
-//     padding: 0px 2px 1px;
-//   }
-
-  const customStyle = {
-    container: () => ({
-      padding: '4px 50px 4px 15px;',
-      'margin-right': '15px;',
-      'line-height': '0;',
-      'height': '2rem;',
-      'align-items': 'center;',
-      'border-radius': '2.5rem;',
-      'outline': 'none;',
-      'cursor': 'pointer;',
-      'user-select': 'none;',
-      width: '50%',
-      'backgroundColor': theme => theme.tertiaryGreen,
-      border: '1px solid green',
-      color: theme => theme.primaryGreen,
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      color: theme => theme.primaryGreen,
-      // background: ${({ theme }) => theme.tertiaryGreen},
-      background: theme => theme.tertiaryGreen,
-      'overflow:-y': 'scroll;',
-      display: 'flex;',
-      'min-height': '20px;',
-      padding: '0px 2px 1px;',
-    }),
-    control: () => ({
-      // none of react-select's styles are passed to <Control />
-      width: 500,
-    }),
-    singleValue: (provided, state) => {
-      const opacity = state.isDisabled ? 0.5 : 1;
-      const transition = 'opacity 300ms';
-  
-      return { ...provided, opacity, transition };
-    }
-  }
-
 const InputRow = styled.div`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items: center;
+  justify-content: space-between;
   padding: 0.25rem 0.85rem 0.75rem;
 `
 
@@ -110,30 +49,33 @@ const StartStreamButton = styled.button`
 `
 
 const StreamConfigButton = styled.button`
-  align-items: center;
-  font-size: 1rem;
-  color: ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.textColor)};
+  background: ${({ theme }) => theme.primaryGreen}; 
+  font-family: Ubuntu; 
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 7px;
+  color: white;
+  width: 60%;
   height: 2rem;
-  border: 1px solid ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.placeholderGray)};
-  border-radius: 2.5rem;
-  background-color: ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.placeholderGray)};
-  outline: none;
-  cursor: pointer;
-  user-select: none;
+  font-size: 0.8rem;
   :hover {
+    background: ${({ theme }) => theme.secondaryGreen};
+    cursor: pointer; 
+    box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.25);
     border: 1px solid
-      ${({ enabled, theme }) => (enabled ? darken(0.1, theme.primaryGreen) : darken(0.1, theme.placeholderGray))};
-  }
-  :focus {
-    border: 1px solid ${({ theme }) => darken(0.1, theme.primaryGreen)};
-  }
-  :active {
-    background-color: ${({ theme }) => theme.secondaryGreen};
+    ${({ enabled, theme }) => (enabled ? darken(0.1, theme.primaryGreen) : darken(0.1, theme.placeholderGray))};
   }
 `
 
 const StyledButtonName = styled.span`
   margin: 0 0.25rem 0 0.25rem;
+`
+
+const SelectContainer = styled.div`
+  position: relative;
+  font-family: Ubuntu;
+  background-color: ${({ theme }) => theme.tertiaryGreen};
+  width: 200px;
+  select
 `
 
 const Aligner = styled.span`
@@ -298,14 +240,23 @@ export default function StreamConfigModal({
   const allTokens = useAllTokenDetails()
   
   const [deposit, setDeposit] = useState("")
-  const [startTime, setStartTime] = useState(0)
-  const [stopTime, setStopTime] = useState(0)
+  const [startTime, setStartTime] = useState(new Date())
+  const [stopTime, setStopTime] = useState(new Date())
   const [selectedToken, setSelectedToken] = useState({})
   const [searchQuery, setSearchQuery] = useState('')
   const [streamHistory, setStreamHistory] = useState([])
 
   // manage focus on modal show
   const inputRef = useRef()
+
+  function changeStartTime(date) {
+    setStartTime(date)
+    console.log(date.getTime())
+  }
+
+  function changeStopTime(date) {
+    setStopTime(date)
+  }
 
   function clearInputAndDismiss() {
     setDeposit(0)
@@ -494,19 +445,20 @@ export default function StreamConfigModal({
           </CloseIcon>
         </ModalHeader>
         <InputRow>
-        {/* <Select onChange={e => setSelectedToken(e.target.value)}>
-          <Option value="" hidden>Token</Option>
-        { tokenList.length > 0 ? tokenList.map((token, index) => <Option key={index} value={token}>{token.name}</Option>) : null}
-        </Select> */}
-        <Select style={customStyle} options={tokenList.map((token) => {
-          return {
-            label: token.name,
-            value: token.symbol
-          } 
-        })} />
+        <SelectContainer>
+          <select onChange={e => setSelectedToken(e.target.value)}>
+            <Option value="" hidden>Select token</Option>
+            { tokenList.length > 0 ? tokenList.map((token, index) => <Option key={index} value={token}>{token.name}</Option>) : null}
+            </select>
+        </SelectContainer>
         <Aligner>
             
           </Aligner>
+      </InputRow>
+      <InputRow>
+        <p>Deposit amount</p>
+        <p>Stream start time (GMT)</p>
+        <p>Stream stop time (GMT)</p>
       </InputRow>
         <InputRow>
         <Input
@@ -528,44 +480,8 @@ export default function StreamConfigModal({
           }}
           value={deposit}
         />
-        <Input
-          ref={inputRef}
-          type="number"
-          min="0"
-          error={!!errorMessage}
-          placeholder="Max. Mintable (population limit)"
-          step="1"
-          onChange={e => setStartTime(e.target.value)}
-          onKeyPress={e => {
-            const charCode = e.which ? e.which : e.keyCode
-
-            // Prevent 'minus' character
-            if (charCode === 45) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-          }}
-          value={startTime}
-        />
-        <Input
-          ref={inputRef}
-          type="number"
-          min="0"
-          error={!!errorMessage}
-          placeholder="Max. Mintable (population limit)"
-          step="1"
-          onChange={e => setStopTime(e.target.value)}
-          onKeyPress={e => {
-            const charCode = e.which ? e.which : e.keyCode
-
-            // Prevent 'minus' character
-            if (charCode === 45) {
-              e.preventDefault()
-              e.stopPropagation()
-            }
-          }}
-          value={stopTime}
-        />
+        <DateTimePicker onChange={(date) => changeStartTime(date)} value={startTime} />
+        <DateTimePicker onChange={(date) => changeStopTime(date)} value={stopTime} />
       </InputRow>
       <InputRow>
           <Aligner>
@@ -588,7 +504,7 @@ export default function StreamConfigModal({
               gasLimit: calculateGasMargin(estimatedGas, GAS_MARGIN)
             })
             console.log(approveTx)
-          }}>Approve test DAI</StreamConfigButton> 
+          }}>Approve</StreamConfigButton> 
           <StreamConfigButton onClick={async () => {
             const estimatedGas = await sablier.estimate.createStream('0x8aDa904a7Df2088024eabD0de41a880AD9ECe4d3', deposit, selectedToken, startTime, stopTime)
             const streamTx = sablier
@@ -619,7 +535,7 @@ export default function StreamConfigModal({
               gasLimit: calculateGasMargin(estimatedGas, GAS_MARGIN)
             });
             console.log(withdrawFromStreamTx)
-          }}>Withdraw from stream</StreamConfigButton>
+          }}>Withdraw earnings</StreamConfigButton>
           </Aligner>
       </InputRow>
         </ConfigModal>

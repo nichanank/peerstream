@@ -142,7 +142,7 @@ export const JumbotronColumn = styled.div`
 `
 
 export const MainHeader = styled.h1`
-  color: black;  
+  color: ${({ theme }) => theme.primaryGreen};  
   font-family: Ubuntu;
   font-weight: 600;
   font-size: 2.5rem;
@@ -206,6 +206,10 @@ export const JumbotronButton = styled.button`
   width: 25%;
   height: 10%;
   font-size: 1.1rem;
+  :hover {
+    background: ${({ theme }) => theme.secondaryGreen}; 
+    box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.25);
+  }
 `
 
 export const CTAButtonPrimary = styled.button`
@@ -217,6 +221,10 @@ export const CTAButtonPrimary = styled.button`
   width: 15%;
   height: 15%;
   font-size: 1rem;
+  :hover {
+    background: ${({ theme }) => theme.secondaryGreen}; 
+    box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.25);
+  }
 `
 
 export const CTAButtonSecondary = styled.button`
@@ -225,7 +233,12 @@ export const CTAButtonSecondary = styled.button`
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 7px;
   color: white;
-  width: 15%;
-  height: 15%;
-  font-size: 1rem;
+  width: 50%;
+  height: 20%;
+  font-size: 0.9rem;
+  margin-bottom: 5%;
+  :hover {
+    background: ${({ theme }) => theme.primaryGreen}; 
+    box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.25);
+  }
 `
