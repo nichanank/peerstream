@@ -3,6 +3,8 @@ import { useWeb3React } from '@web3-react/core'
 import Box from '3box'
 import styled from 'styled-components'
 
+import { CTAButtonSecondary } from '../../theme/components'
+
 //socal icons
 import github_icon from '../../assets/img/icon-github.png'
 import twitter_icon from '../../assets/img/icon-twitter.png'
@@ -61,22 +63,6 @@ const SocialIcon = styled.img`
   border-radius: 50%;
 `
 
-const ConnectButton = styled.button`
-  height: 20%;
-  background: #76B39D;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.25);
-  border-radius: 5px;
-  font-family: Ubuntu;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 20px;
-  line-height: 132.13%;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: #FFFFFF;
-`
-
 export default function PeerCard({ space, peer, configureStream, createNewConfidentialThread, dmThread, setActiveChat, openChatModal }) {
 
   const { account } = useWeb3React()
@@ -98,17 +84,21 @@ export default function PeerCard({ space, peer, configureStream, createNewConfid
       const accounts = await Box.getVerifiedAccounts(profile)
       return accounts
     }
-    fetchProfile(peer.address).then((result) => {
-      setProfile(result)
-      setProfileImg(result.image[0].contentUrl['/'])
-      fetchVerifiedAccounts(result).then((accounts) => setVerifiedAccounts(accounts))
-      setLoading(false)
-    })
+    let isSubscribed = true
+    if (isSubscribed) {
+      fetchProfile(peer.address).then((result) => {
+        setProfile(result)
+        setProfileImg(result.image[0].contentUrl['/'])
+        fetchVerifiedAccounts(result).then((accounts) => setVerifiedAccounts(accounts))
+        setLoading(false)
+      })
+    }
+    return () => (isSubscribed = false)
   }, [peer])
   
     return (
       <Card>
-        {profileImg !== "" && !loading ? <ProfilePic src={IPFS_URL + profileImg} alt={profileImg}></ProfilePic> : <ProfilePic src={threeBox_icon} alt={profileImg}></ProfilePic>}
+        {profileImg !== "" ? <ProfilePic src={IPFS_URL + profileImg} alt={profileImg}></ProfilePic> : <ProfilePic src={threeBox_icon} alt={profileImg}></ProfilePic>}
         <Name>{profile.name}</Name>
           <p>{peer.message}</p>
         <SocialIconContainer>
@@ -121,34 +111,34 @@ export default function PeerCard({ space, peer, configureStream, createNewConfid
 
           dmThread.length > 0 ? 
 
-              // if a DM thread with this peer already exists, join it
-              <ConnectButton onClick={async () => {
-                  const thread = await space.joinThreadByAddress(dmThread[0].message.split(' ')[1])
-                  const posts = await thread.getPosts()
-                  setActiveChat(thread, posts)
-                  openChatModal()
-                  }}>
-                Send Message
-              </ConnectButton> :
+            // if a DM thread with this peer already exists, join it
+            <CTAButtonSecondary onClick={async () => {
+                const thread = await space.joinThreadByAddress(dmThread[0].message.split(' ')[1])
+                const posts = await thread.getPosts()
+                setActiveChat(thread, posts)
+                openChatModal()
+                }}>
+              Message
+            </CTAButtonSecondary> :
 
-              // if a DM thread with this peer does not already exist, create one
-              <ConnectButton onClick={async () => {
-                  const thread = await space.createConfidentialThread('stream-dms-' + peer.address)
-                  await thread.addMember(peer.address)
-                  const posts = await thread.getPosts()
-                  const newThread = { threadAddress: thread.address, sender: account, recipient: peer.address }
-                  createNewConfidentialThread(newThread)
-                  setActiveChat(thread, posts)
-                  openChatModal()}}>
-                Connect
-              </ConnectButton>
-          :
-            <ConnectButton onClick={() => console.log(space)}>Connect 3Box</ConnectButton> 
-          }
+            // if a DM thread with this peer does not already exist, create one
+            <CTAButtonSecondary onClick={async () => {
+                const thread = await space.createConfidentialThread('stream-dms-' + peer.address)
+                await thread.addMember(peer.address)
+                const posts = await thread.getPosts()
+                const newThread = { threadAddress: thread.address, sender: account, recipient: peer.address }
+                createNewConfidentialThread(newThread)
+                setActiveChat(thread, posts)
+                openChatModal()}}>
+              Reach out
+            </CTAButtonSecondary>
+        :
+          <CTAButtonSecondary onClick={() => console.log(space)}>Connect 3Box</CTAButtonSecondary> 
+      }
 
 
           { Object.keys(space).length >= 0 ? 
-              <ConnectButton onClick={configureStream}>Start Stream</ConnectButton> : 
+              <CTAButtonSecondary onClick={configureStream}>Start Stream</CTAButtonSecondary> : 
               <button onClick={() => console.log('boo')}>connect to 3box to continue</button> }
       </Card>
     )

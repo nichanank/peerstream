@@ -123,12 +123,6 @@ export const Spinner = styled.img`
   height: 16px;
 `
 
-export const Page = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin: 0 0 0 0;
-`
-
 export const Jumbotron = styled.div`
   position: relative;
   font-family: Ubuntu;
@@ -151,7 +145,7 @@ export const MainHeader = styled.h1`
   color: black;  
   font-family: Ubuntu;
   font-weight: 600;
-  font-size: 2rem;
+  font-size: 2.5rem;
   padding-top: 4px;
   letter-spacing: 1px
 `
@@ -183,4 +177,55 @@ export const SubOneLiner = styled.h4`
   font-size: 1.5rem;
   text-align: center;
   color: #155E63;
+`
+
+export const TripletContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: ${({ theme }) => theme.tertiaryGreen};
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-top: 3%;
+  padding-bottom: 3%;
+`
+
+export const TripletRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+`
+
+export const JumbotronButton = styled.button`
+  background: ${({ theme }) => theme.primaryGreen}; 
+  font-family: Ubuntu; 
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 7px;
+  color: white;
+  width: 25%;
+  height: 10%;
+  font-size: 1.1rem;
+`
+
+export const CTAButtonPrimary = styled.button`
+  background: ${({ theme }) => theme.primaryGreen}; 
+  font-family: Ubuntu; 
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 7px;
+  color: white;
+  width: 15%;
+  height: 15%;
+  font-size: 1rem;
+`
+
+export const CTAButtonSecondary = styled.button`
+  background: ${({ theme }) => theme.secondaryGreen}; 
+  font-family: Ubuntu; 
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 7px;
+  color: white;
+  width: 15%;
+  height: 15%;
+  font-size: 1rem;
 `

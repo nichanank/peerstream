@@ -1,20 +1,32 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import styled from 'styled-components'
 import Box from '3box'
+import Typed from 'typed.js'
 import PeerCard from '../../components/PeerCard'
 import StreamConfigModal from '../../components/StreamConfigModal'
 import PeerSignUpModal from '../../components/PeerSignUpModal'
 import PeerChatModal from '../../components/PeerChatModal'
-import { useBox } from '../../hooks/'
-import { Page, Jumbotron, JumbotronColumn, MainHeader, OneLinerContainer, OneLiner, SubOneLiner } from '../../theme/components'
 
-//design the discover container
+import { Jumbotron, JumbotronColumn, MainHeader, OneLinerContainer, OneLiner, SubOneLiner, CTAButtonPrimary, JumbotronButton } from '../../theme/components'
+
+const jumbotronPeerTypes = ['mentor', 'beta tester', 'advisor', 'security expert', 'designer', 'domain specialist']
+
 const DiscoverContainer = styled.div`
   position: relative;
   width: 100vw;
-  height: 1284px;
+  height: 100vh;
+  padding: 20 20 20 20;
+  overflow-y: scroll;
   background: #F9F8EB;
+  ::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
+  }
+`
+
+const PeerTypes = styled.span`
+  font-size: 1.5rem;
 `
 
 const Description = styled.p`
@@ -31,9 +43,6 @@ export function Discover() {
 
   const { library, account } = useWeb3React()
 
-  // const { box, space } = useBox()
-
-  const [box, setBox] = useState({})
   const [space, setSpace] = useState({})
   const [posts, setPosts] = useState([])
   const [thread, setThread] = useState({})
@@ -43,44 +52,32 @@ export function Discover() {
   const [peerSignUpModalIsOpen, setPeerSignUpModalIsOpen] = useState(false)
   const [peerChatModalIsOpen, setPeerChatModalIsOpen] = useState(false)
   const [streamConfigModalIsOpen, setStreamConfigModalIsOpen] = useState(false)
-
   const [previousPrivateMessages, setPreviousPrivateMessages] = useState([])
   const [activePrivateThread, setActivePrivateThread] = useState({})
 
-  // create a 3box instance and open space
-  // useEffect(() => {
+  const headingRef = useRef(null)
 
-  //   async function openBox() {
-  //     const box = await Box.openBox(account, library.provider)
-  //     // await box.syncDone
-  //     console.log(box)
-  //     return box        
-  //   }
-  //   async function openSpace(boxInstance) {
-  //     const space = await boxInstance.openSpace('stream')
-  //     await space.syncDone
-  //     console.log(space)
-  //     return space
-  //   }
+  useEffect(() => {
+    headingRef.current.scrollIntoView()
+    const options = {
+        strings: jumbotronPeerTypes,
+        typeSpeed: 50,
+        loop: true
+    }
+    const typed = new Typed('#instruction', options)
+    
+    // destroy typed instance on unmounting to prevent memory leaks
+    return () => {
+        typed.destroy()
+    }
 
-  //   const timer = setTimeout(() => {
-  //     setLoading(true)
-  //     console.log('opening box...')
-  //     openBox(account, library.provider).then((box) => {
-  //       setBox(box)
-  //       openSpace(box).then((space) => setSpace(space))
-  //       setLoading(false)
-  //     })
-  //   }, 25000);
-  //   return () => clearTimeout(timer);
-
-  // }, [account, library.provider])
+}, [])
 
   async function openBoxAndSyncSpace() {
+    setLoading(true)
     const box = await Box.openBox(account, library.provider)
     await box.syncDone
     console.log(box)
-    setBox(box)
     
     const space = await box.openSpace('stream')
     await space.syncDone
@@ -94,27 +91,30 @@ export function Discover() {
     setThread(() => getAppsThread(thread))
   }
 
+  // retrieve public thread information about available peers
   useEffect(() => {
     
     async function getPosts(threadAddress) {
       const posts = await Box.getThreadByAddress(threadAddress)
       return posts
     }
+
+    let isSubscribed = true;
     
     getPosts("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
       .then((result) => {
-        setPosts(result)
-        // posts.map((post) => console.log(post.message))
-        const dms = posts.filter((post) => post.message.split(' ')[2] === account || post.message.split(' ')[3] === account)
-        // console.log(dms)
-        setUserDms(dms)
-
-        // posts.map((post) => console.log(post.message))
-        const peers = posts.filter((post) => post.message.split(' ')[0] === 'peer-signup:')
-                          .map(post => ({address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
-        // console.log(peers)
-        setPeers(peers)
+        if (isSubscribed) {
+          setPosts(result)
+          const dms = posts.filter((post) => post.message.split(' ')[2] === account || post.message.split(' ')[3] === account)
+          setUserDms(dms)
+          const peers = posts.filter((post) => post.message.split(' ')[0] === 'peer-signup:')
+                            .map(post => ({address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
+          setPeers(peers)
+        }
       })
+      .catch(err => isSubscribed ? console.log(err) : null)
+
+    return () => (isSubscribed = false)
 
   }, [posts, account])
   
@@ -132,12 +132,10 @@ export function Discover() {
     // console.log(posts)
     setPosts(posts)
 
-    posts.map((post) => console.log(post.message))
     const dms = posts.filter((post) => post.message.split(' ')[2] === account || post.message.split(' ')[3] === account)
     // console.log(dms)
     setUserDms(dms)
 
-    posts.map((post) => console.log(post.message))
     const peers = posts.filter((post) => post.message.split(' ')[0] === 'peer-signup:')
                        .map(post => ({address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
     // console.log(peers)
@@ -150,7 +148,8 @@ export function Discover() {
                        .map(post => ({address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
       setPeers(peers)
       setUserDms(dms)
-      setPosts(posts);
+      setPosts(posts)
+      setLoading(false)
     })
   }
 
@@ -168,7 +167,7 @@ export function Discover() {
     setPreviousPrivateMessages(posts)
   }
 
-  //populate the discover list from ethAddresses that have signed up to be a peer. this should read from a public thread
+  //populate the discover list from ethAddresses that have signed up to be a peer, this should read from a public thread
   function populateDiscover() {
       if (peers.length > 0) {
         return peers.map((peer, index) => {
@@ -200,39 +199,33 @@ export function Discover() {
     }
         
     return (
-      <Page>
-      <Jumbotron>
-        <JumbotronColumn>
-          <MainHeader>Find your</MainHeader>
-        </JumbotronColumn>
-        <JumbotronColumn>
-          <button onClick={async () => {
-            const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
-
-            // await thread.deletePost("zdpuB27gHwdiXQnkqbmzYAvrDAg6pPsaUUnhXnzd19zMuEDvD")
-
-            setThread(() => getAppsThread(thread))
-               
-            }}>
-            Read app thread</button>
-          
-          {Object.keys(thread).length > 0 ? <button onClick={() => setPeerSignUpModalIsOpen(true)}>Sign up to be a peer</button>  : null}
-          
-          <button onClick={() => openBoxAndSyncSpace()}>Open Box</button>
-
-          <PeerSignUpModal 
-                thread={thread}
-                isOpen={peerSignUpModalIsOpen}
-                onDismiss={() => setPeerSignUpModalIsOpen(false)} />
-        </JumbotronColumn>
-      </Jumbotron>
-      <OneLinerContainer>
-        <OneLiner>Someone here might be able to help you...</OneLiner>
-        <SubOneLiner>Connect with them to start a chat!</SubOneLiner> 
-      </OneLinerContainer>
-      <DiscoverContainer>
-        {populateDiscover()}
-      </DiscoverContainer>
-      </Page>
+      <>
+        <Jumbotron ref={headingRef}>
+          <JumbotronColumn>
+            <MainHeader>Find your</MainHeader>
+            <div><PeerTypes id='instruction' /></div>
+          </JumbotronColumn>
+          <JumbotronColumn>
+            <JumbotronButton onClick={() => openBoxAndSyncSpace()}>Connect</JumbotronButton>
+          </JumbotronColumn>
+        </Jumbotron>
+        <OneLinerContainer>
+          <OneLiner>Someone here might be able to help you...</OneLiner>
+          <SubOneLiner>Connect with them to start a chat!</SubOneLiner> 
+        </OneLinerContainer>
+        <DiscoverContainer>
+          {populateDiscover()}
+        </DiscoverContainer>
+        <OneLinerContainer>
+          <SubOneLiner>Want to turn every day into payday? Become a peer</SubOneLiner>
+          {Object.keys(thread).length > 0 ? 
+            <CTAButtonPrimary onClick={() => setPeerSignUpModalIsOpen(true)}>Sign up</CTAButtonPrimary>  : 
+            <CTAButtonPrimary onClick={() => openBoxAndSyncSpace()}>Connect via 3Box</CTAButtonPrimary>}
+        </OneLinerContainer>
+        <PeerSignUpModal 
+          thread={thread}
+          isOpen={peerSignUpModalIsOpen}
+          onDismiss={() => setPeerSignUpModalIsOpen(false)} />
+      </>
     )
   }

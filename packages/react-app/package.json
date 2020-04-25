@@ -47,7 +47,8 @@
     "react-spring": "^8.0.27",
     "redux": "3.7.2",
     "redux-thunk": "2.2.0",
-    "styled-components": "^5.1.0"
+    "styled-components": "^5.1.0",
+    "typed.js": "^2.0.11"
   },
   "devDependencies": {
     "@testing-library/dom": "^6.12.2",
