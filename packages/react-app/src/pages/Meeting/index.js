@@ -1,30 +1,50 @@
 import React, { useState, useRef, useCallback } from 'react'
 import styled from 'styled-components'
-import  { useUserMedia, useEventEmitter } from '../../hooks'
 import Peer from 'peerjs'
+import  { useUserMedia, useEventEmitter } from '../../hooks'
 
 const VideoContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  padding-top: 3%;
+  padding-bottom: 2%;
   width: 100vw;
-  height: 70vh;
-  padding-left: 7%;
-  padding-right: 2%;
+  height: 60vh;
 `
 
 const InformationContainer = styled.div`
   display: flex;
   flex-direction: row;
-  width: 100vw;
-  height: 20vh;
+  justify-content: space-between;
+  width: 80vw;
+  height: 5vh;
+  margin-left: 5%;
+  margin-bottom: 2%;
 `
 
 const ButtonsContainer = styled.div`
   display: flex;
   flex-direction: row;
   width: 100vw;
-  height: 10vh;
+  height: 5vh;
+  justify-content: center;
+  margin-bottom: 2%;
+`
+
+export const MeetingButton = styled.button`
+  background: ${({ theme }) => theme.primaryGreen}; 
+  font-family: Ubuntu; 
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 7px;
+  color: white;
+  width: 15%;
+  margin-left: 3%;
+  font-size: 1rem;
+  :hover {
+    background: ${({ theme }) => theme.secondaryGreen}; 
+    box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.25);
+  }
 `
 
 const CAPTURE_OPTIONS = {
@@ -119,12 +139,12 @@ export function Meeting() {
   return (
     <React.Fragment>
       <VideoContainer>
-        <video ref={videoRef} onCanPlay={handleCanPlay} autoPlay playsInline muted />
-        <video ref={peerVideoRef} onCanPlay={handlePeerStreamCanPlay} autoPlay playsInline muted />
+        <video ref={videoRef} onCanPlay={handleCanPlay} width="60%" height="90%" autoPlay playsInline muted />
+        <video ref={peerVideoRef} onCanPlay={handlePeerStreamCanPlay} width="60%" height="90%" autoPlay playsInline muted />
       </VideoContainer>
-      <InformationContainer><span>my id is {peer.id}</span><span>peer id is {peerId}</span></InformationContainer>
-      <ButtonsContainer><input onChange={e => setPeerId(e.target.value)}/><button onClick={() => connectToPeer()}>Connect</button>
-      <button onClick={() => askToCall()}>Call</button></ButtonsContainer>
+      <InformationContainer><span><strong>My Video ID:</strong> {peer.id}</span><span><strong>Peer Video ID:</strong> {peerId}</span></InformationContainer>
+      <ButtonsContainer><input onChange={e => setPeerId(e.target.value)}/><MeetingButton onClick={() => connectToPeer()}>Connect</MeetingButton>
+      <MeetingButton onClick={() => askToCall()}>Call</MeetingButton></ButtonsContainer>
     </React.Fragment>
   );
 }
