@@ -52,6 +52,9 @@ export default function Footer() {
           <ExternalLink id="link" href="https://nichanank.com/">
             <h1 id="title">About</h1>
           </ExternalLink>
+          <ExternalLink id="link" href="https://github.com/nichanank/peerstream">
+            <h1 id="title">Code</h1>
+          </ExternalLink>
           {/* <FooterNavigation /> */}
         </Title>
       </FooterElement>

@@ -152,6 +152,7 @@ export default function PeerChatModal({
 
   function clearInputAndDismiss() {
     onDismiss()
+    setMessage('')
   }
 
   function onInput(event) {
@@ -160,8 +161,9 @@ export default function PeerChatModal({
   }
 
   function renderPreviousMessages() {
-    return previousMessages.map((message, index) => {
-      var sentOn = new Date(Date(message.timestamp)).toLocaleString('en-US', {timeZone: 'UTC'})
+    const timeSorted = previousMessages.reverse()
+    return timeSorted.map((message, index) => {
+      var sentOn = new Date(message.timestamp * 1000).toLocaleString('en-US')
       return (
         <ModalRow key={index}>
           <RowLeft>{message.message}</RowLeft>
@@ -201,7 +203,7 @@ export default function PeerChatModal({
           <SendButton onClick={async () => {
             await privateThread.post(message)
             setMessage('')
-          }}>Post</SendButton>
+          }}>Send</SendButton>
           </Aligner>
       </InputRow>
         </ChatModal>

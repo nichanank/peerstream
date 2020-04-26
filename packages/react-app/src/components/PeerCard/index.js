@@ -160,9 +160,7 @@ export default function PeerCard({ space, peer, configureStream, createNewConfid
             { Object.keys(space).length >= 0 ? 
                 <CTAButtonSecondary onClick={configureStream}>Start Stream</CTAButtonSecondary> : 
                 <button onClick={() => console.log('boo')}>connect to 3box to continue</button> }
-            { peer.address === account ? <p>tis me</p> : null}
-            <button onClick={async () => await mainThread.deletePost(peer.postId)}>test</button>
-            <button onClick={() => console.log(mainThread)}>test</button>
+            { peer.address === account && Object.keys(space).length ? <button onClick={async () => await mainThread.deletePost(peer.postId)}>Remove myself from list</button> : null}
         </CardIconsAndButtons>
       </Card>
     )

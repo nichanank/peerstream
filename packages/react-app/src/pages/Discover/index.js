@@ -203,15 +203,19 @@ export function Discover() {
                 openChatModal={() => setPeerChatModalIsOpen(true)}
                 configureStream={() => setStreamConfigModalIsOpen(true)} >
               </PeerCard> 
-            <StreamConfigModal 
-                recipient={peer.address}
-                isOpen={streamConfigModalIsOpen}
-                onDismiss={() => setStreamConfigModalIsOpen(false)} />
-            <PeerChatModal 
+            {streamConfigModalIsOpen ?
+              <StreamConfigModal 
+              recipient={peer.address}
+              isOpen={streamConfigModalIsOpen}
+              onDismiss={() => setStreamConfigModalIsOpen(false)} />
+               : null }
+            {peerChatModalIsOpen ?
+              <PeerChatModal 
                 privateThread={activePrivateThread}
                 previousMessages={previousPrivateMessages.reverse()}
                 isOpen={peerChatModalIsOpen}
                 onDismiss={() => setPeerChatModalIsOpen(false)} />
+              : null }
             </React.Fragment>
             )
         })
@@ -242,10 +246,12 @@ export function Discover() {
           isAPeer ? <p>You're already a peer!</p> : <CTAButtonPrimary onClick={() => setPeerSignUpModalIsOpen(true)}>Sign up</CTAButtonPrimary> : 
             <CTAButtonPrimary onClick={() => openBoxAndSyncSpace()}>Sign in with 3Box</CTAButtonPrimary>}
         </OneLinerContainer>
-        <PeerSignUpModal 
-          thread={thread}
-          isOpen={peerSignUpModalIsOpen}
-          onDismiss={() => setPeerSignUpModalIsOpen(false)} />
+        {peerSignUpModalIsOpen ? 
+          <PeerSignUpModal 
+            thread={thread}
+            isOpen={peerSignUpModalIsOpen}
+            onDismiss={() => setPeerSignUpModalIsOpen(false)} 
+          /> : null}
       </>
     )
   }
