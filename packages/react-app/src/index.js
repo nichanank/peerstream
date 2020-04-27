@@ -8,6 +8,8 @@ import ApolloClient from "apollo-boost"
 import { ApolloProvider } from "@apollo/react-hooks"
 import { NetworkContextName } from './constants'
 import ThemeProvider, { GlobalStyle } from './theme'
+import { transitions, positions, Provider as AlertProvider } from 'react-alert'
+import AlertTemplate from 'react-alert-template-basic'
 import App from './pages/App'
 import "./index.css";
 
@@ -24,6 +26,17 @@ function getLibrary(provider) {
   library.pollingInterval = 10000
   return library
 }
+
+// optional cofiguration
+const alertOptions = {
+  // you can also just use 'bottom center'
+  position: positions.TOP_CENTER,
+  timeout: 5000,
+  offset: '30px',
+  // you can also just use 'scale'
+  transition: transitions.SCALE
+}
+
 
 // This is the official Sablier subgraph. You can replace it with your own, if you need to.
 // See all subgraphs: https://thegraph.com/explorer/
@@ -62,7 +75,9 @@ ReactDOM.render(
             <ThemeProvider>
               {/* <GlobalStyle /> */}
               <ApolloProvider client={client}>
-                <App />
+                <AlertProvider template={AlertTemplate} {...alertOptions}>
+                  <App />
+                </AlertProvider>
               </ApolloProvider>
           </ThemeProvider>
           </ContextProviders>

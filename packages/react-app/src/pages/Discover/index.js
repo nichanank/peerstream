@@ -3,10 +3,13 @@ import { useWeb3React } from '@web3-react/core'
 import styled from 'styled-components'
 import Box from '3box'
 import Typed from 'typed.js'
+import { useAlert } from 'react-alert'
 import PeerCard from '../../components/PeerCard'
 import StreamConfigModal from '../../components/StreamConfigModal'
 import PeerSignUpModal from '../../components/PeerSignUpModal'
 import PeerChatModal from '../../components/PeerChatModal'
+import Circle from '../../assets/img/circle.svg'
+import { Spinner } from '../../theme'
 
 import { Jumbotron, JumbotronColumn, MainHeader, OneLinerContainer, OneLiner, SubOneLiner, CTAButtonPrimary } from '../../theme/components'
 
@@ -23,6 +26,12 @@ const DiscoverContainer = styled.div`
     width: 0px;
     background: transparent; /* make scrollbar transparent */
   }
+`
+
+const SpinnerWrapper = styled(Spinner)`
+  margin: 0 0.25rem 0 0.25rem;
+  color: ${({ theme }) => theme.chaliceGray};
+  opacity: 0.6;
 `
 
 const JumbotronButton = styled.button`
@@ -65,7 +74,7 @@ export function Discover() {
   const [peers, setPeers] = useState([])
   const [isAPeer, setIsAPeer] = useState(false)
   const [userDms, setUserDms] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [peerSignUpModalIsOpen, setPeerSignUpModalIsOpen] = useState(false)
   const [peerChatModalIsOpen, setPeerChatModalIsOpen] = useState(false)
   const [streamConfigModalIsOpen, setStreamConfigModalIsOpen] = useState(false)
@@ -73,6 +82,8 @@ export function Discover() {
   const [activePrivateThread, setActivePrivateThread] = useState({})
 
   const headingRef = useRef(null)
+
+  const alert = useAlert()
 
   useEffect(() => {
     headingRef.current.scrollIntoView()
@@ -92,20 +103,21 @@ export function Discover() {
 
   async function openBoxAndSyncSpace() {
     setLoading(true)
-    const box = await Box.openBox(account, library.provider)
-    await box.syncDone
-    console.log(box)
-    
-    const space = await box.openSpace('stream')
-    await space.syncDone
-    console.log(space)
-    setSpace(space)
+    try {
+      const box = await Box.openBox(account, library.provider)
+      await box.syncDone
+      console.log(box)
+      
+      const space = await box.openSpace('stream')
+      await space.syncDone
+      console.log(space)
+      setSpace(space)
 
-    const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
-
-    // await thread.deletePost("zdpuB27gHwdiXQnkqbmzYAvrDAg6pPsaUUnhXnzd19zMuEDvD")
-
-    setThread(() => getAppsThread(thread))
+      const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
+      setThread(() => getAppsThread(thread))
+    } catch (err) {
+      alert.show(err)
+    }
   }
 
   // retrieve public thread information about available peers
@@ -141,7 +153,6 @@ export function Discover() {
   
   //aysync retrieve people who have signed up to be peers
   async function getAppsThread(thread) {
-    console.log('getting into apps thread')
     if (!thread) {
       console.error("apps thread not in react state");
       return;
@@ -155,7 +166,6 @@ export function Discover() {
     const dms = posts.filter((post) => post.message.split(' ')[2] === account || post.message.split(' ')[3] === account)
     // console.log(dms)
     setUserDms(dms)
-    console.log(posts[1])
     const peers = posts.filter((post) => post.message.split(' ')[0] === 'peer-signup:')
                        .map(post => ({postId: post.postId, address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
     // console.log(peers)
@@ -213,13 +223,14 @@ export function Discover() {
               <PeerChatModal 
                 privateThread={activePrivateThread}
                 previousMessages={previousPrivateMessages.reverse()}
+                onNewMessageSent={(thread, posts) => setActiveChat(thread, posts)}
                 isOpen={peerChatModalIsOpen}
                 onDismiss={() => setPeerChatModalIsOpen(false)} />
               : null }
             </React.Fragment>
             )
         })
-      } return loading ? <p>loading peers...</p> : <p>no peers yet, sign up to be one!</p>
+      } return loading ? <><Spinner src={Circle} alt="loader" /><p>loading peers...</p></> : <p>no peers yet, sign up to be one!</p>
     }
         
     return (
@@ -230,7 +241,7 @@ export function Discover() {
             <div><PeerTypes id='instruction' /></div>
           </JumbotronColumn>
           <JumbotronColumn>
-            <JumbotronButton onClick={() => openBoxAndSyncSpace()}>Sign in with 3Box</JumbotronButton>
+            { loading ? <Spinner src={Circle} alt="loader" /> : Object.keys(space).length === 0 ? <JumbotronButton onClick={() => openBoxAndSyncSpace()}>Sign in with 3Box</JumbotronButton> : null}
           </JumbotronColumn>
         </Jumbotron>
         <OneLinerContainer>

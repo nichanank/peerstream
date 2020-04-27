@@ -1,6 +1,6 @@
 import styled, { keyframes } from 'styled-components'
 import { darken } from 'polished'
-import '../index.css';
+import '../index.css'
 
 export const Button = styled.button.attrs(({ warning, theme }) => ({
   backgroundColor: warning ? theme.salmonRed : theme.royalBlue
@@ -227,6 +227,18 @@ export const CTAButtonPrimary = styled.button`
   }
 `
 
+export const DisabledButtonContainer = styled.div`
+  display: flex;
+  .hoverMessage {
+    visibility: hidden;
+  }
+  :hover {
+    .hoverMessage {
+      visibility: visible;
+    }
+}
+`
+
 export const CTAButtonSecondary = styled.button`
   background: ${({ theme }) => theme.secondaryGreen}; 
   font-family: Ubuntu; 
@@ -237,8 +249,26 @@ export const CTAButtonSecondary = styled.button`
   height: 20%;
   font-size: 0.9rem;
   margin-bottom: 5%;
+  .hoverMessage {
+    visibility: hidden;
+    position: absolute;
+    z-index: 1;
+  }
   :hover {
     background: ${({ theme }) => theme.primaryGreen}; 
     box-shadow: 0px 7px 7px rgba(0, 0, 0, 0.25);
+    .hoverMessage {
+      visibility: visible;
+      font-family: Ubuntu;
+      font-style: italic;
+      text-align: center;
+      padding-bottom: 7%;
+      padding-right: 2%;
+      font-size: 0.8rem;
+      color: ${({ theme }) => theme.primaryGreen};
+    }
+  }
+  :disabled {
+    background: ${({ theme }) => theme.placeholderGray}; 
   }
 `

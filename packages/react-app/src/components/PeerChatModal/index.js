@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import styled from 'styled-components'
 import { darken } from 'polished'
 import { isMobile } from 'react-device-detect'
+import { Link, withRouter } from 'react-router-dom'
 import Modal from '../Modal'
 import { BorderlessInput } from '../../theme'
 import { Spinner } from '../../theme'
@@ -37,6 +38,7 @@ const SendButton = styled.button`
   }
 `
 
+
 const StyledButtonName = styled.span`
   margin: 0 0.25rem 0 0.25rem;
 `
@@ -66,7 +68,8 @@ const ModalHeader = styled.div`
   align-items: center;
   padding: 0px 0px 0px 1rem;
   height: 60px;
-  color: ${({ theme }) => theme.black};
+  background: ${({ theme }) => theme.secondaryGreen};
+  color: white};
 `
 
 const CloseColor = styled(Close)`
@@ -136,7 +139,8 @@ export default function PeerChatModal({
   isOpen,
   onDismiss,
   privateThread,
-  previousMessages
+  previousMessages,
+  onNewMessageSent
   }) {
   
   const [message, setMessage] = useState('')
@@ -155,8 +159,7 @@ export default function PeerChatModal({
   }
 
   function renderPreviousMessages() {
-    const timeSorted = previousMessages.reverse()
-    return timeSorted.map((message, index) => {
+    return previousMessages.map((message, index) => {
       var sentOn = new Date(message.timestamp * 1000).toLocaleString('en-US')
       return (
         <ModalRow key={index}>
@@ -181,6 +184,7 @@ export default function PeerChatModal({
             <CloseColor alt={'close icon'} />
           </CloseIcon>
         </ModalHeader>
+        {renderPreviousMessages()}
         <InputRow>
           <Input
             ref={inputRef}
@@ -191,13 +195,15 @@ export default function PeerChatModal({
             value={message}
           />
       </InputRow>
-      {renderPreviousMessages()}
       <InputRow>
           <Aligner>
           <SendButton onClick={async () => {
             await privateThread.post(message)
+            const dms = await privateThread.getPosts();
+            onNewMessageSent(privateThread, dms)
             setMessage('')
           }}>Send</SendButton>
+          <a href="localhost:3000/meeting" target="_blank" rel="noopener noreferrer">Meeting</a>
           </Aligner>
       </InputRow>
         </ChatModal>

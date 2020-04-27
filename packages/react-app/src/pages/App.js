@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react'
-import { BrowserRouter, Redirect, Route } from 'react-router-dom'
+import { BrowserRouter, Route } from 'react-router-dom'
 import styled from 'styled-components'
 import { Home } from './Home'
 import { Discover } from './Discover'
@@ -74,7 +74,7 @@ export default function App() {
                     <Route exact path="/" component={Home} />
                     <Route path={"/home"} component={Home} />
                     { context.active ? <Route path={"/discover"} component={Discover} /> : null }
-                    <Route path={"/meeting"} component={Meeting} />
+                    { context.active ? <Route path={"/meeting"} component={Meeting} /> : null }
                   </Suspense>
                 </Web3ReactManager>
               </Body>

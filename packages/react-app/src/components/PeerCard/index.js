@@ -108,10 +108,10 @@ export default function PeerCard({ space, peer, configureStream, createNewConfid
     if (isSubscribed) {
       fetchProfile(peer.address).then((result) => {
         setProfile(result)
-        setProfileImg(result.image[0].contentUrl['/'])
+        result.image ? setProfileImg(result.image[0].contentUrl['/']) : setProfileImg('')
         fetchVerifiedAccounts(result).then((accounts) => setVerifiedAccounts(accounts))
         setLoading(false)
-      })
+      }).catch(err => isSubscribed ? console.log(err) : null)
     }
     return () => (isSubscribed = false)
   }, [peer])
@@ -155,13 +155,16 @@ export default function PeerCard({ space, peer, configureStream, createNewConfid
                 Reach out
               </CTAButtonSecondary> :
 
-            <CTAButtonSecondary onClick={() => console.log(space)}>Connect 3Box</CTAButtonSecondary> }
+            <><CTAButtonSecondary disabled>
+              Reach out
+              <p className="hoverMessage">Sign in with 3Box to reach out to this peer</p>
+            </CTAButtonSecondary></> }
             
             { Object.keys(space).length >= 0 ? 
                 <CTAButtonSecondary onClick={configureStream}>Start Stream</CTAButtonSecondary> : 
                 <button onClick={() => console.log('boo')}>connect to 3box to continue</button> }
             { peer.address === account && Object.keys(space).length ? 
-              <button onClick={async () => await mainThread.deletePost(peer.postId)}>Remove myself from list</button> : null}
+              <button onClick={async () => await mainThread.deletePost(peer.postId)}>Remove myself from list</button> : null }
         </CardIconsAndButtons>
       </Card>
     )
