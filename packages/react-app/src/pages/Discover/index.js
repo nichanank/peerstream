@@ -8,6 +8,7 @@ import PeerCard from '../../components/PeerCard'
 import StreamConfigModal from '../../components/StreamConfigModal'
 import PeerSignUpModal from '../../components/PeerSignUpModal'
 import PeerChatModal from '../../components/PeerChatModal'
+import MessageModal from '../../components/MessageModal'
 import Circle from '../../assets/img/circle.svg'
 import { Spinner } from '../../theme'
 
@@ -78,6 +79,7 @@ export function Discover() {
   const [peerSignUpModalIsOpen, setPeerSignUpModalIsOpen] = useState(false)
   const [peerChatModalIsOpen, setPeerChatModalIsOpen] = useState(false)
   const [streamConfigModalIsOpen, setStreamConfigModalIsOpen] = useState(false)
+  const [messageModalIsOpen, setMessageModalIsOpen] = useState(false)
   const [previousPrivateMessages, setPreviousPrivateMessages] = useState([])
   const [activePrivateThread, setActivePrivateThread] = useState({})
 
@@ -128,7 +130,7 @@ export function Discover() {
       return posts
     }
 
-    let isSubscribed = true;
+    let isSubscribed = true
     
     getPosts("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
       .then((result) => {
@@ -160,26 +162,29 @@ export function Discover() {
     setThread(thread)
     // console.log(thread)
 
-    const posts = await thread.getPosts();
+    const posts = await thread.getPosts()
     setPosts(posts)
 
     const dms = posts.filter((post) => post.message.split(' ')[2] === account || post.message.split(' ')[3] === account)
     // console.log(dms)
     setUserDms(dms)
     const peers = posts.filter((post) => post.message.split(' ')[0] === 'peer-signup:')
-                       .map(post => ({postId: post.postId, address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
+                      .map(post => ({postId: post.postId, address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
     // console.log(peers)
     setPeers(peers)
-
+    setLoading(false)
     await thread.onUpdate(async()=> {
-      const posts = await thread.getPosts();
+      const posts = await thread.getPosts()
       const dms = posts.filter((post) => post.message.split(' ')[2] === account || post.message.split(' ')[3] === account)
       const peers = posts.filter((post) => post.message.split(' ')[0] === 'peer-signup:')
-                       .map(post => ({postId: post.postId, address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
+                      .map(post => ({postId: post.postId, address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
+      const mySignup = posts.filter((post) => post.message.split(' ')[0] === 'peer-signup:').filter((signup) => signup.message.split(' ')[1] === account)
+      if (mySignup.length > 0) {
+        setIsAPeer(true)
+      } else { setIsAPeer(false) }
       setPeers(peers)
       setUserDms(dms)
       setPosts(posts)
-      setLoading(false)
     })
   }
 
@@ -187,9 +192,13 @@ export function Discover() {
     await thread.post("dm-created " + newThread.threadAddress + " " + newThread.sender + " " + newThread.recipient)
   }
 
-  function checkIfDmAlreadyExists(address) {
-    return userDms.filter((dm) => (dm.message.split(' ')[2] === address|| 
+  function checkIfThreadAlreadyExists(address) {
+    return userDms.filter((dm) => (dm.message.split(' ')[2] === account && 
                                   (dm.message.split(' ')[3] === address)))
+  }
+
+  function getExistingThreads() {
+    return userDms.filter((dm) => (dm.message.split(' ')[3] === account))
   }
 
   function setActiveChat(thread, posts) {
@@ -207,9 +216,10 @@ export function Discover() {
                 peer={peer}
                 space={space}
                 mainThread={thread}
-                dmThread={checkIfDmAlreadyExists(peer.address)}
+                dmThread={checkIfThreadAlreadyExists(peer.address)}
                 createNewConfidentialThread={(newThread) => recordNewConfidentialThread(newThread)}
                 setActiveChat={(activePrivateThread, previousPosts) => setActiveChat(activePrivateThread, previousPosts)}
+                viewMessages={() => setMessageModalIsOpen(true)}
                 openChatModal={() => setPeerChatModalIsOpen(true)}
                 configureStream={() => setStreamConfigModalIsOpen(true)} >
               </PeerCard> 
@@ -222,7 +232,7 @@ export function Discover() {
             {peerChatModalIsOpen ?
               <PeerChatModal 
                 privateThread={activePrivateThread}
-                previousMessages={previousPrivateMessages.reverse()}
+                previousMessages={previousPrivateMessages}
                 onNewMessageSent={(thread, posts) => setActiveChat(thread, posts)}
                 isOpen={peerChatModalIsOpen}
                 onDismiss={() => setPeerChatModalIsOpen(false)} />
@@ -263,6 +273,13 @@ export function Discover() {
             thread={thread}
             isOpen={peerSignUpModalIsOpen}
             onDismiss={() => setPeerSignUpModalIsOpen(false)} 
+          /> : null}
+        {messageModalIsOpen ? 
+          <MessageModal 
+            space={space}
+            threads={getExistingThreads()} //existing messages to user
+            isOpen={messageModalIsOpen}
+            onDismiss={() => setMessageModalIsOpen(false)} 
           /> : null}
       </>
     )

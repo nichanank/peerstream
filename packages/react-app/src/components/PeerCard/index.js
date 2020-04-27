@@ -83,7 +83,7 @@ const SocialIcon = styled.img`
   border-radius: 50%;
 `
 
-export default function PeerCard({ space, peer, configureStream, createNewConfidentialThread, dmThread, setActiveChat, openChatModal, mainThread }) {
+export default function PeerCard({ space, peer, configureStream, createNewConfidentialThread, dmThread, setActiveChat, openChatModal, mainThread, viewMessages }) {
 
   const { account } = useWeb3React()
   
@@ -130,7 +130,7 @@ export default function PeerCard({ space, peer, configureStream, createNewConfid
             {profile.website ? <a href={profile.website} rel="noopener noreferrer" target="_blank"><SocialIcon src={website_icon} alt={profile.website}></SocialIcon></a> : null}
             <a href={THREEBOX_URL + peer.address} rel="noopener noreferrer" target="_blank"><SocialIcon src={threeBox_icon} alt={peer.address}></SocialIcon></a>
           </SocialIconContainer>
-          { Object.keys(space).length > 0 ? 
+          { Object.keys(space).length > 0 && peer.address !== account ? 
 
             dmThread.length > 0 ? 
 
@@ -155,16 +155,19 @@ export default function PeerCard({ space, peer, configureStream, createNewConfid
                 Reach out
               </CTAButtonSecondary> :
 
-            <><CTAButtonSecondary disabled>
+            peer.address !== account ? <><CTAButtonSecondary disabled>
               Reach out
               <p className="hoverMessage">Sign in with 3Box to reach out to this peer</p>
-            </CTAButtonSecondary></> }
+            </CTAButtonSecondary></> : null }
             
-            { Object.keys(space).length >= 0 ? 
-                <CTAButtonSecondary onClick={configureStream}>Start Stream</CTAButtonSecondary> : 
-                <button onClick={() => console.log('boo')}>connect to 3box to continue</button> }
-            { peer.address === account && Object.keys(space).length ? 
-              <button onClick={async () => await mainThread.deletePost(peer.postId)}>Remove myself from list</button> : null }
+            <CTAButtonSecondary onClick={configureStream}>Start Stream</CTAButtonSecondary>
+            { peer.address === account && Object.keys(space).length ?
+              <>
+                <CTAButtonSecondary onClick={viewMessages}>
+                  View Messages
+                </CTAButtonSecondary> 
+                <button onClick={async () => await mainThread.deletePost(peer.postId)}>Remove myself from list</button>
+              </> : null }
         </CardIconsAndButtons>
       </Card>
     )
