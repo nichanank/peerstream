@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { useWeb3React } from '@web3-react/core'
 import Box from '3box'
 import styled from 'styled-components'
-
 import { CTAButtonSecondary } from '../../theme/components'
 
 //socal icons
@@ -137,30 +136,32 @@ export default function PeerCard({ space, peer, configureStream, createNewConfid
 
               // if a DM thread with this peer already exists, join it
               <CTAButtonSecondary onClick={async () => {
-                  const thread = await space.joinThreadByAddress(dmThread[0].message.split(' ')[1])
-                  const posts = await thread.getPosts()
-                  setActiveChat(thread, posts)
-                  openChatModal()
-                  }}>
+                const thread = await space.joinThreadByAddress(dmThread[0].message.split(' ')[1])
+                const posts = await thread.getPosts()
+                setActiveChat(thread, posts)
+                openChatModal()}}>
                 Message
               </CTAButtonSecondary> :
 
               // if a DM thread with this peer does not already exist, create one
               <CTAButtonSecondary onClick={async () => {
-                  const thread = await space.createConfidentialThread('stream-dms-' + peer.address)
-                  await thread.addMember(peer.address)
-                  const posts = await thread.getPosts()
-                  const newThread = { threadAddress: thread.address, sender: account, recipient: peer.address }
-                  createNewConfidentialThread(newThread)
-                  setActiveChat(thread, posts)
-                  openChatModal()}}>
+                const thread = await space.createConfidentialThread('stream-dms-' + peer.address)
+                await thread.addMember(peer.address)
+                const posts = await thread.getPosts()
+                const newThread = { threadAddress: thread.address, sender: account, recipient: peer.address }
+                createNewConfidentialThread(newThread)
+                setActiveChat(thread, posts)
+                openChatModal()}}>
                 Reach out
               </CTAButtonSecondary> :
+
             <CTAButtonSecondary onClick={() => console.log(space)}>Connect 3Box</CTAButtonSecondary> }
+            
             { Object.keys(space).length >= 0 ? 
                 <CTAButtonSecondary onClick={configureStream}>Start Stream</CTAButtonSecondary> : 
                 <button onClick={() => console.log('boo')}>connect to 3box to continue</button> }
-            { peer.address === account && Object.keys(space).length ? <button onClick={async () => await mainThread.deletePost(peer.postId)}>Remove myself from list</button> : null}
+            { peer.address === account && Object.keys(space).length ? 
+              <button onClick={async () => await mainThread.deletePost(peer.postId)}>Remove myself from list</button> : null}
         </CardIconsAndButtons>
       </Card>
     )

@@ -243,8 +243,9 @@ export function Discover() {
         <OneLinerContainer>
           <SubOneLiner>Want to turn every day into payday? Become a peer</SubOneLiner>
           {Object.keys(thread).length > 0 ? 
-          isAPeer ? <p>You're already a peer!</p> : <CTAButtonPrimary onClick={() => setPeerSignUpModalIsOpen(true)}>Sign up</CTAButtonPrimary> : 
-            <CTAButtonPrimary onClick={() => openBoxAndSyncSpace()}>Sign in with 3Box</CTAButtonPrimary>}
+            isAPeer ? <p>You're already a peer!</p> : <CTAButtonPrimary onClick={() => setPeerSignUpModalIsOpen(true)}>Sign up</CTAButtonPrimary> : 
+            <CTAButtonPrimary onClick={() => openBoxAndSyncSpace()}>Sign in with 3Box</CTAButtonPrimary>
+          }
         </OneLinerContainer>
         {peerSignUpModalIsOpen ? 
           <PeerSignUpModal 

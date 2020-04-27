@@ -1,7 +1,6 @@
 import { ethers } from 'ethers'
 import { addresses, abis } from "@sablier-app/contracts";
 import UncheckedJsonRpcSigner from './signer'
-import Box from '3box'
 // import { formatFixed } from '@uniswap/sdk'
 
 const ETHERSCAN_PREFIXES = {
@@ -22,8 +21,7 @@ export const ERROR_CODES = ['TOKEN_NAME', 'TOKEN_SYMBOL', 'TOKEN_DECIMALS'].redu
   (accumulator, currentValue, currentIndex) => {
     accumulator[currentValue] = currentIndex
     return accumulator
-  },
-  {}
+  }, {}
 )
 
 export function safeAccess(object, path) {
@@ -115,29 +113,6 @@ export async function getTokenSymbol(tokenAddress, library) {
     })
 }
 
-//attempting use hook into the box and space instance
-export async function getBox(library, account) {
-  const box = await Box.openBox(account, library.provider)
-  console.log(box)
-  const space = await box.openSpace('stream')
-  console.log(space)
-  return { box, space }
-}
-
-// export async function getUnopenedBox(library, account) {
-//     const box = await Box.openBox(account, library.provider)
-//     await box.syncDone
-//     console.log(box)
-// }
-
-// export async function getOpenedBox(library, account) {
-//   const space = await boxInstance.openSpace('stream')
-//   await space.syncDone
-//   console.log(space)
-//   return space
-// }
-
-
 // get token decimals
 export async function getTokenDecimals(tokenAddress, library) {
   if (!isAddress(tokenAddress)) {
@@ -151,7 +126,6 @@ export async function getTokenDecimals(tokenAddress, library) {
       throw error
     })
 }
-
 
 export function shortenAddress(address, digits = 4) {
   if (!isAddress(address)) {

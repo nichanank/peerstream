@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense, lazy,  } from 'react'
+import React, { Suspense } from 'react'
 import { BrowserRouter, Redirect, Route } from 'react-router-dom'
 import styled from 'styled-components'
 import { Home } from './Home'

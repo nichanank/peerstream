@@ -2,19 +2,18 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import * as serviceWorker from './serviceWorker'
-import { Web3ReactProvider, createWeb3ReactRoot } from '@web3-react/core'
 import { ethers } from 'ethers'
+import { Web3ReactProvider, createWeb3ReactRoot } from '@web3-react/core'
+import ApolloClient from "apollo-boost"
+import { ApolloProvider } from "@apollo/react-hooks"
 import { NetworkContextName } from './constants'
-import App from './pages/App'
-import ApolloClient from "apollo-boost";
-import { ApolloProvider } from "@apollo/react-hooks";
-import "./index.css";
 import ThemeProvider, { GlobalStyle } from './theme'
+import App from './pages/App'
+import "./index.css";
 
 import ApplicationContextProvider, { Updater as ApplicationContextUpdater } from './contexts/Application'
 import TokensContextProvider, { Updater as TokensContextUpdater } from './contexts/Tokens'
 // import LocalStorageContextProvider, { Updater as LocalStorageContextUpdater } from './contexts/LocalStorage'
-// import TransactionContextProvider, { Updater as TransactionContextUpdater } from './contexts/Transactions'
 
 require('./App.css')
 
@@ -37,11 +36,9 @@ function ContextProviders({ children }) {
   return (
     // <LocalStorageContextProvider>
       <ApplicationContextProvider>
-        {/* <TransactionContextProvider> */}
         <TokensContextProvider>
             {children}
         </TokensContextProvider>
-        {/* </TransactionContextProvider> */}
       </ApplicationContextProvider>
     /* </LocalStorageContextProvider> */
   )
@@ -52,7 +49,6 @@ function Updaters() {
     <>
       {/* <LocalStorageContextUpdater /> */}
       <ApplicationContextUpdater />
-      {/* <TransactionContextUpdater /> */}
     </>
   )
 }

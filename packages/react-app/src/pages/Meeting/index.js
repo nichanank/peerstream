@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react'
+import  { useUserMedia, useEventEmitter } from '../../hooks'
 import styled from 'styled-components'
 import Peer from 'peerjs'
-import  { useUserMedia, useEventEmitter } from '../../hooks'
 
 const VideoContainer = styled.div`
   display: flex;
@@ -71,13 +71,13 @@ export function Meeting() {
     console.log('ON: set peer id')  
     setPeerId(peer.id);
     },[]
-  );
+  )
 
   const handleSetConnection = useCallback((connection) => {
     console.log('Connection established with ' + connection.peer)  
     setPeerId(connection.peer)
   },[]
-);
+)
 
   const handleSetCall = useCallback((call) => {
     console.log('Incoming call')
@@ -93,7 +93,7 @@ export function Meeting() {
       })
     } else {console.log('call denied') }
   },[mediaStream]
-);
+)
 
   const handlePeerError = useCallback((error) => {
     alert('an error occured: ' + error)
@@ -146,5 +146,5 @@ export function Meeting() {
       <ButtonsContainer><input onChange={e => setPeerId(e.target.value)}/><MeetingButton onClick={() => connectToPeer()}>Connect</MeetingButton>
       <MeetingButton onClick={() => askToCall()}>Call</MeetingButton></ButtonsContainer>
     </React.Fragment>
-  );
+  )
 }

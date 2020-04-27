@@ -25,11 +25,6 @@ const Emoji = styled.span`
   height: ${({ size }) => size};
 `
 
-// const StyledEthereumLogo = styled(EthereumLogo)`
-//   width: ${({ size }) => size};
-//   height: ${({ size }) => size};
-// `
-
 export default function TokenIcon({ address, size = '1rem', ...rest }) {
   const [error, setError] = useState(false)
 

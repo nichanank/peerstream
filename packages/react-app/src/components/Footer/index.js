@@ -1,8 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import { darken, transparentize } from 'polished'
-// import FooterNavigation from '../FooterNavigation'
-
 import { ExternalLink } from '../../theme'
 
 const FooterFrame = styled.div`
@@ -24,7 +21,7 @@ const FooterElement = styled.div`
 const Title = styled.div`
   display: flex;
   align-items: center;
-  color: ${({ theme }) => theme.textColor};
+  color: ${({ theme }) => theme.primaryGreen};
   :hover {
     cursor: pointer;
   }
@@ -36,9 +33,9 @@ const Title = styled.div`
     font-size: 0.825rem;
     margin-right: 12px;
     font-weight: 400;
-    color: ${({ theme }) => theme.textColor};
+    color: ${({ theme }) => theme.primaryGreen};
     :hover {
-      color: ${({ theme }) => theme.textColor};
+      color: ${({ theme }) => theme.secondaryGreen};
     }
   }
 `

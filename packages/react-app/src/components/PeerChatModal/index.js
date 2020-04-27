@@ -2,20 +2,17 @@ import React, { useState, useRef } from 'react'
 import styled from 'styled-components'
 import { darken } from 'polished'
 import { isMobile } from 'react-device-detect'
-import escapeStringRegex from 'escape-string-regexp'
-import { BorderlessInput } from '../../theme'
 import Modal from '../Modal'
+import { BorderlessInput } from '../../theme'
 import { Spinner } from '../../theme'
 import { ReactComponent as Close } from '../../assets/img/x.svg'
 import Circle from '../../assets/img/circle.svg'
-
 
 const InputRow = styled.div`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items: center;
   padding: 0.25rem 0.85rem 0.75rem;
 `
-
 
 const SendButton = styled.button`
   align-items: center;
@@ -97,7 +94,6 @@ const TokenModalInfo = styled.div`
   user-select: none;
 `
 
-
 const RowLeft = styled.div`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items : center;
@@ -109,7 +105,6 @@ const RowRight = styled.div`
   color: gray;
   font-size: 0.4rem;
 `
-
 
 const ModalRow = styled.div`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -135,7 +130,6 @@ const SpinnerWrapper = styled(Spinner)`
   color: ${({ theme }) => theme.chaliceGray};
   opacity: 0.6;
 `
-
 
 export default function PeerChatModal({
   errorMessage,
