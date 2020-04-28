@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import Typed from 'typed.js'
 import { useWeb3React } from '@web3-react/core'
 import { useContract } from '../../hooks'
 import { gql } from "apollo-boost"
@@ -14,6 +15,8 @@ import transfer from '../../assets/img/transfer.png'
 import sablier from '../../assets/img/logo-sablier.png'
 import eth from '../../assets/img/logo-eth.png'
 import threeBox from '../../assets/img/logo-3box.png'
+
+const jumbotronMessages = ['Live conversations, live payments', '1:1 text and video chat with mentors', 'Discover domain experts and get help', 'Get feedback on your project', 'No hidden fees, instant earnings withdraw']
 
 const ContainerHeaderRow = styled.div`
   display: flex;
@@ -36,6 +39,11 @@ const InfoWrapper = styled.div`
 const InfoHeading = styled.h3`
   font-family: Ubuntu;
   color: ${({ theme }) => theme.primaryGreen};
+`
+
+const PeerTypes = styled.span`
+  font-size: 1.5rem;
+  color: ${({ theme }) => theme.primaryGreen};  
 `
 
 const Description = styled.p`
@@ -115,6 +123,21 @@ export function Home() {
 
   const { loading, error, data } = useQuery(GET_STREAMS)
 
+  useEffect(() => {
+    const options = {
+        strings: jumbotronMessages,
+        typeSpeed: 50,
+        loop: true
+    }
+    const typed = new Typed('#instruction', options)
+    
+    // destroy typed instance on unmounting to prevent memory leaks
+    return () => {
+        typed.destroy()
+    }
+
+}, [])
+
   
   async function readOnChainData() {
     const nextStreamId = await sablierContract.nextStreamId();
@@ -133,8 +156,8 @@ export function Home() {
     <>
       <Jumbotron>
         <JumbotronColumn>
-          <MainHeader>Stream money</MainHeader>
-          <InfoWrapper><Description>Real time payments</Description></InfoWrapper>
+          <MainHeader>Peer Stream</MainHeader>
+          <div><PeerTypes id='instruction' /></div>
         </JumbotronColumn>
         <JumbotronColumn>
           <JumbotronButton onClick={() => learnMoreRef.current.scrollIntoView({ behavior: 'smooth' })}>Learn more</JumbotronButton>
@@ -148,7 +171,6 @@ export function Home() {
       <TripletContainer>
         <ContainerHeaderRow>
           <ContainerHeader>How it works</ContainerHeader>
-          {/* <p>Get paid in crypto for your time, no credit card required, Get paid in crypto for your time, no credit card required, Get paid in crypto for your time, no credit card required</p> */}
         </ContainerHeaderRow>
         <TripletRow>
           <Image src={find_experts} alt="find_experts"></Image>
@@ -161,15 +183,14 @@ export function Home() {
           <InfoWrapper><InfoHeading>Pay as you go</InfoHeading></InfoWrapper>
         </TripletRow>
         <TripletRow>
-          <InfoWrapper><Description>Discover specialists who can give you advice, or users who can give product feedback</Description></InfoWrapper>
-          <InfoWrapper><Description>Reach out to instantly start a private chat with them to discuss work to be done</Description></InfoWrapper>
+          <InfoWrapper><Description>Discover specialists who can give you advice, or users who can give product feedback.</Description></InfoWrapper>
+          <InfoWrapper><Description>Reach out to instantly start a private chat with peers to discuss work to be done.</Description></InfoWrapper>
           <InfoWrapper><Description>Connect your Ethereum wallet and start a payment stream. No credit card required.</Description></InfoWrapper>
         </TripletRow>
       </TripletContainer>
       <TripletContainer>
         <ContainerHeaderRow>
           <ContainerHeader>Powered by</ContainerHeader>
-          {/* <p>Get paid in crypto for your time, no credit card required, Get paid in crypto for your time, no credit card required, Get paid in crypto for your time, no credit card required</p> */}
         </ContainerHeaderRow>
         <TripletRow>
           <Image src={sablier} alt="sablier"></Image>
