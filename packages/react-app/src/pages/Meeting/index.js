@@ -53,9 +53,10 @@ const CAPTURE_OPTIONS = {
 };
 
 const peer = new Peer((Math.random().toString(36) + '0000000000000000000').substr(2, 16), {
-  host: 'localhost',
-  port: 9000,
-  path: '/'
+  host: 'peerstream-server.herokuapp.com',
+  port: 443,
+  path: '/peerjs',
+  secure: true
 });
 
 export function Meeting() {
@@ -121,7 +122,10 @@ export function Meeting() {
 
   function connectToPeer() {
     if (peerId) {
-      peer.connect(peerId)
+      var connection = peer.connect(peerId)
+      connection.on('on', function(connect) {
+        console.log(connect)
+      })
     } else {
       alert('enter an id')
       return false
