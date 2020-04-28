@@ -7,7 +7,7 @@ import { useContract } from '../../hooks'
 import { gql } from "apollo-boost"
 import { useQuery } from "@apollo/react-hooks"
 import { useWalletModalToggle } from '../../contexts/Application'
-import { Jumbotron, JumbotronColumn, MainHeader, OneLinerContainer, OneLiner, SubOneLiner, TripletRow, TripletContainer, CTAButtonPrimary, JumbotronButton } from '../../theme/components'
+import { Jumbotron, JumbotronColumn, MainHeader, OneLinerContainer, OneLiner, SubOneLiner, TripletRow, TripletContainer, CTAButtonPrimary, JumbotronButton, ExternalLink } from '../../theme/components'
 
 import find_experts from '../../assets/img/find-people.png'
 import meeting from '../../assets/img/meeting.png'
@@ -56,6 +56,11 @@ const Description = styled.p`
 const Image = styled.img`
   width: 25%;
   height: 80%;
+`
+
+const Logo = styled.img`
+  width: 17vw;
+  height: 10vh;
 `
 
 const StyledLink = styled(Link)`
@@ -193,9 +198,9 @@ export function Home() {
           <ContainerHeader>Powered by</ContainerHeader>
         </ContainerHeaderRow>
         <TripletRow>
-          <Image src={sablier} alt="sablier"></Image>
-          <Image src={eth} alt="eth"></Image>
-          <Image src={threeBox} alt="threeBox"></Image>
+          <ExternalLink href="https://sablier.finance/" rel="noopener noreferrer" target="_blank" display="none"><Logo src={sablier} alt="sablier"/></ExternalLink>
+          <ExternalLink href="https://ethereum.org/" rel="noopener noreferrer" target="_blank" display="none"><Logo src={eth} alt="eth"/></ExternalLink>
+          <ExternalLink href="https://3box.io/" rel="noopener noreferrer" target="_blank" display="none"><Logo src={threeBox} alt="threeBox" /></ExternalLink>
         </TripletRow>
       </TripletContainer>
       <OneLinerContainer>

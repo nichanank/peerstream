@@ -9,11 +9,17 @@ const StyledLink = styled(Link)`
   display: flex;
   align-items: center;
   font-family: Ubuntu;
+  text-decoration: none;
+  font-size: 1rem;
   :hover {
     cursor: pointer;
   }
+  :visited {
+    color: ${({ theme }) => theme.primaryGreen};
+  }
   #navigation {
     display: inline;
+    text-decoration: none;
     font-size: 1rem;
     margin-right: 15px;
     font-weight: 500;
@@ -38,11 +44,6 @@ function HeaderNavigation() {
             <StyledLink to={"/discover"} id="navigation">Discover</StyledLink>
           </HeaderNavigationLink>
         : null}
-        {/* {library ? 
-          <HeaderNavigationLink>
-            <StyledLink to={"/meeting"} id="navigation">Meeting</StyledLink>
-          </HeaderNavigationLink>
-        : null} */}
       </>
     )
 }

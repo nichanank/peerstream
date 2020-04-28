@@ -1,21 +1,6 @@
 import { ethers } from 'ethers'
 import { addresses, abis } from "@sablier-app/contracts";
 import UncheckedJsonRpcSigner from './signer'
-// import { formatFixed } from '@uniswap/sdk'
-
-const ETHERSCAN_PREFIXES = {
-  1: '',
-  3: 'ropsten.',
-  4: 'rinkeby.',
-  5: 'goerli.',
-  42: 'kovan.'
-}
-
-const etherscanTypes = {
-  address: 'address',
-  token: 'token',
-  transaction: 'tx'
-}
 
 export const ERROR_CODES = ['TOKEN_NAME', 'TOKEN_SYMBOL', 'TOKEN_DECIMALS'].reduce(
   (accumulator, currentValue, currentIndex) => {
@@ -146,16 +131,6 @@ export function calculateGasMargin(value, margin) {
 export function formatEthBalance(balance) {
   return amountFormatter(balance, 18, 6)
 }
-
-// export function formatToUsd(price) {
-//   const format = { decimalSeparator: '.', groupSeparator: ',', groupSize: 3 }
-//   const usdPrice = formatFixed(price, {
-//     decimalPlaces: 2,
-//     dropTrailingZeros: false,
-//     format
-//   })
-//   return usdPrice
-// }
 
 export function formatTokenBalance(balance, decimal) {
   return !!(balance && Number.isInteger(decimal)) ? amountFormatter(balance, decimal, Math.min(4, decimal)) : 0

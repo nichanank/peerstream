@@ -2,8 +2,6 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { isAddress } from '../../utils'
 
-// import { ReactComponent as EthereumLogo } from '../../assets/img/logo-eth.png'
-
 const TOKEN_ICON_API = address =>
   `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${isAddress(
     address

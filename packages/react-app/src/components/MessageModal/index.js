@@ -6,7 +6,6 @@ import Modal from '../Modal'
 import { BorderlessInput } from '../../theme'
 import { Spinner } from '../../theme'
 import { ReactComponent as Close } from '../../assets/img/x.svg'
-import Circle from '../../assets/img/circle.svg'
 
 const InputRow = styled.div`
   ${({ theme }) => theme.flexRowNoWrap}
@@ -37,6 +36,44 @@ const SendButton = styled.button`
   }
 `
 
+const MeetingButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.textColor)};
+  height: 2rem;
+  padding-left: 3%;
+  padding-right: 3%;
+  border-radius: 2.5rem;
+  background-color: ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.placeholderGray)};
+  outline: none;
+  cursor: pointer;
+  user-select: none;
+  a { 
+    text-decoration: none;
+    color: white;
+    text-align: center;
+    align-items: center;
+    margin: auto;
+    font-size: 0.8rem;
+  }
+  :hover {
+    border: 1px solid
+      ${({ enabled, theme }) => (enabled ? darken(0.1, theme.primaryGreen) : darken(0.1, theme.placeholderGray))};
+  }
+`
+
+const StaticInformation = styled.p`
+  text-align: flex-end;
+  align-self: flex-end;
+  font-size: 0.7rem;
+  font-style: italic;
+  margin-left: 5%;
+  margin-right: 5%;
+  color: ${({ theme }) => theme.primaryGreen};
+`
+
 const Aligner = styled.span`
   display: flex;
   align-items: center;
@@ -56,7 +93,7 @@ const RowRight = styled.div`
 `
 
 const Input = styled(BorderlessInput)`
-  font-size: 1.5rem;
+  font-size: 1rem;
   color: ${({ error, theme }) => error && theme.pink};
   background-color: ${({ theme }) => theme.tertiaryGreen};
   -moz-appearance: textfield;
@@ -125,8 +162,6 @@ export default function MessageModal({
   onDismiss,
   space,
   threads,
-  privateThread,
-  onNewMessageSent
   }) {
   
   const [message, setMessage] = useState('')
@@ -194,6 +229,14 @@ export default function MessageModal({
                 setPosts(updatedPosts)
                 setMessage('')
               }}>Send</SendButton>
+              </Aligner>
+            </InputRow>
+            <InputRow>
+              <Aligner>
+                <MeetingButton enabled={true}><a href={window.location.origin + "/meeting"} target="_blank" rel="noopener noreferrer">Start a Meeting</a></MeetingButton>
+                <StaticInformation>
+                  This connects you to a peer-to-peer video chat room. You'll be given a <strong>peer Id</strong> which you can give to your peer to connect to. Once you the two of you are connected, you can start a call with your peer.
+                </StaticInformation>
               </Aligner>
             </InputRow>
           </>

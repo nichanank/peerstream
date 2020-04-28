@@ -11,9 +11,7 @@ import { calculateGasMargin, getStreamEventsBetween, getStreamEventsTo } from '.
 import { BorderlessInput } from '../../theme'
 import { useAllTokenDetails } from '../../contexts/Tokens'
 import Modal from '../Modal'
-import { Spinner } from '../../theme'
 import { ReactComponent as Close } from '../../assets/img/x.svg'
-import Circle from '../../assets/img/circle.svg'
 
 const GAS_MARGIN = ethers.utils.bigNumberify(1000)
 BigNumber.config({ EXPONENTIAL_AT: 30 })
@@ -159,7 +157,6 @@ export default function StreamConfigModal({
   isOpen,
   onDismiss,
   recipient,  
-  hideETH=false
   }) {
   
   const { account, chainId, library } = useWeb3React()

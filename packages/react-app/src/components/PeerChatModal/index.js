@@ -231,7 +231,7 @@ export default function PeerChatModal({
       </InputRow>
       <InputRow>
         <Aligner>
-          <MeetingButton enabled={true}><a href="localhost:3000/meeting" target="_blank" rel="noopener noreferrer">Start a Meeting</a></MeetingButton>
+          <MeetingButton enabled={true}><a href={window.location.origin + "/meeting"} target="_blank" rel="noopener noreferrer">Start a Meeting</a></MeetingButton>
           <StaticInformation>
             This connects you to a peer-to-peer video chat room. You'll be given a <strong>peer Id</strong> which you can give to your peer to connect to. Once you the two of you are connected, you can start a call with your peer.
           </StaticInformation>

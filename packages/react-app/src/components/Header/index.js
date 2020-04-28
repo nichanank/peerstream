@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import HeaderNavigation from '../HeaderNavigation'
-// import { ExternalLink } from '../../theme'
+import { ExternalLink } from '../../theme'
 import Web3Status from '../Web3Status'
 
 const HeaderFrame = styled.div`
@@ -36,14 +36,14 @@ const Title = styled.div`
     cursor: pointer;
   }
   #link {
-    text-decoration-color: ${({ theme }) => theme.textColor};
+    text-decoration-color: ${({ theme }) => theme.primaryGreen};
   }
   #title {
     display: inline;
     font-size: 1rem;
     font-weight: 500;
     margin-right: 25px;
-    color: ${({ theme }) => theme.textColor};
+    color: ${({ theme }) => theme.primaryGreen};
 
 
   }
@@ -52,7 +52,7 @@ const Title = styled.div`
     font-size: 1rem;
     font-weight: 500;
     margin-right: 15px;
-    color: ${({ theme }) => theme.textColor};
+    color: ${({ theme }) => theme.primaryGreen};
   }
 `
 
@@ -62,15 +62,15 @@ export default function Header() {
       <HeaderElement>
         <Title>
           <Rotate>
-            {/* <ExternalLink id="link" href="https://lastofours.com">
-              <span role="img" aria-label="whale">
-                🌎{'  '}
+            <ExternalLink id="link" href="https://github.com/nichanank/peerstream">
+              <span role="img" aria-label="lightning">
+                ⚡{'  '}
               </span>
-            </ExternalLink> */}
+            </ExternalLink>
           </Rotate>
-          {/* <ExternalLink id="link" href="https://lastofours.com">
-            <h1 id="title">Last of Ours</h1>
-          </ExternalLink> */}
+          <ExternalLink id="link" href="https://github.com/nichanank/peerstream">
+            <h1 id="title">Peer Stream</h1>
+          </ExternalLink>
           <HeaderNavigation />
         </Title>
       </HeaderElement>
