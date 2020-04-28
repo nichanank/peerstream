@@ -8,7 +8,7 @@ import ApolloClient from "apollo-boost"
 import { ApolloProvider } from "@apollo/react-hooks"
 import { NetworkContextName } from './constants'
 import ThemeProvider, { GlobalStyle } from './theme'
-import { transitions, positions, Provider as AlertProvider } from 'react-alert'
+import { types, transitions, positions, Provider as AlertProvider } from 'react-alert'
 import AlertTemplate from 'react-alert-template-basic'
 import App from './pages/App'
 import "./index.css";
@@ -33,6 +33,7 @@ const alertOptions = {
   position: positions.TOP_CENTER,
   timeout: 5000,
   offset: '30px',
+  type: types.INFO,
   // you can also just use 'scale'
   transition: transitions.SCALE
 }

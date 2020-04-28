@@ -54,7 +54,7 @@ const CAPTURE_OPTIONS = {
 
 const peer = new Peer((Math.random().toString(36) + '0000000000000000000').substr(2, 16), {
   host: 'localhost',
-  port: 4001,
+  port: 9000,
   path: '/'
 });
 

@@ -29,6 +29,12 @@ const DiscoverContainer = styled.div`
   }
 `
 
+const StaticInformation = styled.p`
+  text-align: center;
+  font-family: Ubuntu;
+  color: ${({ theme }) => theme.primaryGreen};
+`
+
 const SpinnerWrapper = styled(Spinner)`
   margin: 0 0.25rem 0 0.25rem;
   color: ${({ theme }) => theme.chaliceGray};
@@ -75,13 +81,15 @@ export function Discover() {
   const [peers, setPeers] = useState([])
   const [isAPeer, setIsAPeer] = useState(false)
   const [userDms, setUserDms] = useState([])
-  const [loading, setLoading] = useState(false)
   const [peerSignUpModalIsOpen, setPeerSignUpModalIsOpen] = useState(false)
   const [peerChatModalIsOpen, setPeerChatModalIsOpen] = useState(false)
   const [streamConfigModalIsOpen, setStreamConfigModalIsOpen] = useState(false)
   const [messageModalIsOpen, setMessageModalIsOpen] = useState(false)
   const [previousPrivateMessages, setPreviousPrivateMessages] = useState([])
   const [activePrivateThread, setActivePrivateThread] = useState({})
+
+  const [boxIsLoading, setBoxIsLoading] = useState(false)
+  const [peerListIsLoading, setPeerListIsLoading] = useState(false)
 
   const headingRef = useRef(null)
 
@@ -103,25 +111,6 @@ export function Discover() {
 
 }, [])
 
-  async function openBoxAndSyncSpace() {
-    setLoading(true)
-    try {
-      const box = await Box.openBox(account, library.provider)
-      await box.syncDone
-      console.log(box)
-      
-      const space = await box.openSpace('stream')
-      await space.syncDone
-      console.log(space)
-      setSpace(space)
-
-      const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
-      setThread(() => getAppsThread(thread))
-    } catch (err) {
-      alert.show(err)
-    }
-  }
-
   // retrieve public thread information about available peers
   useEffect(() => {
     
@@ -131,7 +120,7 @@ export function Discover() {
     }
 
     let isSubscribed = true
-    
+    setPeerListIsLoading(true)
     getPosts("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
       .then((result) => {
         if (isSubscribed) {
@@ -145,6 +134,7 @@ export function Discover() {
           if (mySignup.length > 0) {
             setIsAPeer(true)
           }
+          setPeerListIsLoading(false)
         }
       })
       .catch(err => isSubscribed ? console.log(err) : null)
@@ -152,6 +142,26 @@ export function Discover() {
     return () => (isSubscribed = false)
 
   }, [posts, account])
+
+  async function openBoxAndSyncSpace() {
+    setBoxIsLoading(true)
+    try {
+      const box = await Box.openBox(account, library.provider)
+      await box.syncDone
+      console.log(box)
+      
+      const space = await box.openSpace('stream')
+      await space.syncDone
+      console.log(space)
+      setSpace(space)
+
+      // join the main peer list public thread.
+      const thread = await space.joinThreadByAddress("/orbitdb/zdpuAr4w4ZAZm1YyuDKwcRLKtXx78jH95SghFuARwB99mYVJN/3box.thread.stream.peer_list")
+      setThread(() => getAppsThread(thread))
+    } catch (err) {
+      alert.show(err.toString() + ". Please refresh and try again")
+    }
+  }
   
   //aysync retrieve people who have signed up to be peers
   async function getAppsThread(thread) {
@@ -172,7 +182,7 @@ export function Discover() {
                       .map(post => ({postId: post.postId, address: post.message.split(' ')[1], message: post.message.split(' ').slice(2).join(' ')}))
     // console.log(peers)
     setPeers(peers)
-    setLoading(false)
+    setBoxIsLoading(false)
     await thread.onUpdate(async()=> {
       const posts = await thread.getPosts()
       const dms = posts.filter((post) => post.message.split(' ')[2] === account || post.message.split(' ')[3] === account)
@@ -240,7 +250,7 @@ export function Discover() {
             </React.Fragment>
             )
         })
-      } return loading ? <><Spinner src={Circle} alt="loader" /><p>loading peers...</p></> : <p>no peers yet, sign up to be one!</p>
+      } return peerListIsLoading ? <><Spinner src={Circle} alt="loader" /><StaticInformation>Loading peers...</StaticInformation></> : <StaticInformation>No peers yet, sign up to be one!</StaticInformation>
     }
         
     return (
@@ -251,7 +261,7 @@ export function Discover() {
             <div><PeerTypes id='instruction' /></div>
           </JumbotronColumn>
           <JumbotronColumn>
-            { loading ? <Spinner src={Circle} alt="loader" /> : Object.keys(space).length === 0 ? <JumbotronButton onClick={() => openBoxAndSyncSpace()}>Sign in with 3Box</JumbotronButton> : null}
+            { boxIsLoading ? <Spinner src={Circle} alt="loader" /> : Object.keys(space).length === 0 ? <JumbotronButton onClick={() => openBoxAndSyncSpace()}>Sign in with 3Box</JumbotronButton> : null}
           </JumbotronColumn>
         </Jumbotron>
         <OneLinerContainer>

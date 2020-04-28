@@ -9,9 +9,8 @@ import DateTimePicker from 'react-datetime-picker'
 import { useContract, useERC20Contract } from '../../hooks'
 import { calculateGasMargin, getStreamEventsBetween, getStreamEventsTo } from '../../utils'
 import { BorderlessInput } from '../../theme'
-import { useTokenDetails, useAllTokenDetails } from '../../contexts/Tokens'
+import { useAllTokenDetails } from '../../contexts/Tokens'
 import Modal from '../Modal'
-import TokenIcon from '../TokenIcon'
 import { Spinner } from '../../theme'
 import { ReactComponent as Close } from '../../assets/img/x.svg'
 import Circle from '../../assets/img/circle.svg'
@@ -36,39 +35,22 @@ const StreamInfoRow = styled.div`
   margin: 2% 3% 0 3%;
 `
 
-const StreamInfoButtonsContainer = styled.div`
-  align-self: flex-end
+const StaticInformation = styled.p`
+  text-align: flex-end;
+  align-self: flex-end;
+  font-size: 0.7rem;
+  font-style: italic;
+  margin-left: 5%;
+  margin-right: 5%;
+  color: ${({ theme }) => theme.primaryGreen};
 `
 
 const InputTitle = styled.div`
   flex-direction: column;
   justify-content: center;
-  width: 30%
+  width: 30%;
   align-content: center;
   text-align: center;
-`
-
-const StartStreamButton = styled.button`
-  align-items: center;
-  font-size: 1rem;
-  color: ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.textColor)};
-  height: 2rem;
-  border: 1px solid ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.placeholderGray)};
-  border-radius: 2.5rem;
-  background-color: ${({ enabled, theme }) => (enabled ? theme.secondaryBlue : theme.placeholderGray)};
-  outline: none;
-  cursor: pointer;
-  user-select: none;
-  :hover {
-    border: 1px solid
-      ${({ enabled, theme }) => (enabled ? darken(0.1, theme.primaryGreen) : darken(0.1, theme.placeholderGray))};
-  }
-  :focus {
-    border: 1px solid ${({ theme }) => darken(0.1, theme.primaryGreen)};
-  }
-  :active {
-    background-color: ${({ theme }) => theme.secondaryBlue};
-  }
 `
 
 const StreamConfigButton = styled.button`
@@ -78,9 +60,10 @@ const StreamConfigButton = styled.button`
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 7px;
   color: white;
-  width: 60%;
+  width: 70%;
   height: 2rem;
   font-size: 0.8rem;
+  margin-right: 5%;
   :hover {
     background: ${({ theme }) => theme.secondaryGreen};
     cursor: pointer; 
@@ -249,7 +232,7 @@ export default function StreamConfigModal({
       let amountToDeposit = new BigNumber(convertedDeposit - remainder).toString()
 
       return (
-        <StreamConfigButton onClick={async () => {
+        <StreamConfigButton enabled={true} onClick={async () => {
           const estimatedGas = await testDai.estimate.approve(sablier.address, amountToDeposit)
           const approveTx = await testDai.approve(sablier.address, amountToDeposit, {
             gasLimit: calculateGasMargin(estimatedGas, GAS_MARGIN)
@@ -261,7 +244,7 @@ export default function StreamConfigModal({
   }
 
   function renderStartButton() {
-    if (!startTime || !stopTime) {
+    if (!deposit || !startTime || !stopTime || selectedToken === '') {
       return (
         <StreamConfigButton enabled={false} disabled>
           Start Stream
@@ -274,7 +257,7 @@ export default function StreamConfigModal({
       let amountToDeposit = new BigNumber(convertedDeposit - remainder).toString()
     
       return (
-        <StreamConfigButton onClick={async () => {
+        <StreamConfigButton enabled={true} onClick={async () => {
           const estimatedGas = await sablier.estimate.createStream(recipient, amountToDeposit, selectedToken, convertedStart, convertedStop)
           const streamTx = sablier
             .createStream(recipient, amountToDeposit, selectedToken, convertedStart, convertedStop, {
@@ -323,6 +306,7 @@ export default function StreamConfigModal({
               { tokenList.length > 0 ? tokenList.map((token, index) => <Option key={index} value={token.address}>{token.name}</Option>) : null}
               </select>
           </SelectContainer>
+          <StaticInformation>Note: For testing purposes, please use TestnetDAI. View docs to see how you can mint yourself some TestnetDAI to try the streaming feature.</StaticInformation>
         </InputRow>
         <InputRow>
           <InputTitle>Deposit amount</InputTitle>
@@ -335,7 +319,7 @@ export default function StreamConfigModal({
             type="number"
             min="0"
             error={!!errorMessage}
-            placeholder={'enter deposit amount'}
+            placeholder={'Enter deposit amount'}
             step="1"
             onChange={e => setDeposit(e.target.value)}
             onKeyPress={e => {
@@ -411,12 +395,12 @@ export default function StreamConfigModal({
                     balance: streamBalance })
                 } catch {
                   setSelectedStreamDetails({ 
-                    deposit: "stream complete / no longer active", 
-                    sender: "stream complete / no longer active",
-                    startTime: "stream complete / no longer active",
-                    stopTime: "stream complete / no longer active",
-                    token: "stream complete / no longer active", 
-                    balance: "stream complete / no longer active"})
+                    deposit: "Stream Complete or No Longer Active", 
+                    sender: "Stream Complete or No Longer Active",
+                    startTime: "Stream Complete or No Longer Active",
+                    stopTime: "Stream Complete or No Longer Active",
+                    token: "Stream Complete or No Longer Active", 
+                    balance: "Stream Complete or No Longer Active"})
                 }
               }
             }}>Toggle Details</StreamConfigButton>

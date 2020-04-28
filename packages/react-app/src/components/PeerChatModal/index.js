@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react'
 import styled from 'styled-components'
 import { darken } from 'polished'
 import { isMobile } from 'react-device-detect'
-import { Link, withRouter } from 'react-router-dom'
 import Modal from '../Modal'
 import { BorderlessInput } from '../../theme'
 import { Spinner } from '../../theme'
@@ -18,12 +17,13 @@ const InputRow = styled.div`
 const SendButton = styled.button`
   align-items: center;
   font-size: 1rem;
-  color: ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.textColor)};
+  color: ${({ enabled, theme }) => (enabled ? theme.white : theme.textColor)};
   height: 2rem;
   border: 1px solid ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.placeholderGray)};
   border-radius: 2.5rem;
   background-color: ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.placeholderGray)};
   outline: none;
+  margin-right: 5%;
   cursor: pointer;
   user-select: none;
   :hover {
@@ -38,10 +38,44 @@ const SendButton = styled.button`
   }
 `
 
-
-const StyledButtonName = styled.span`
-  margin: 0 0.25rem 0 0.25rem;
+const MeetingButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.textColor)};
+  height: 2rem;
+  padding-left: 3%;
+  padding-right: 3%;
+  border-radius: 2.5rem;
+  background-color: ${({ enabled, theme }) => (enabled ? theme.primaryGreen : theme.placeholderGray)};
+  outline: none;
+  cursor: pointer;
+  user-select: none;
+  a { 
+    text-decoration: none;
+    color: white;
+    text-align: center;
+    align-items: center;
+    margin: auto;
+    font-size: 0.8rem;
+  }
+  :hover {
+    border: 1px solid
+      ${({ enabled, theme }) => (enabled ? darken(0.1, theme.primaryGreen) : darken(0.1, theme.placeholderGray))};
+  }
 `
+
+const StaticInformation = styled.p`
+  text-align: flex-end;
+  align-self: flex-end;
+  font-size: 0.7rem;
+  font-style: italic;
+  margin-left: 5%;
+  margin-right: 5%;
+  color: ${({ theme }) => theme.primaryGreen};
+`
+
 
 const Aligner = styled.span`
   display: flex;
@@ -50,7 +84,9 @@ const Aligner = styled.span`
 `
 
 const Input = styled(BorderlessInput)`
-  font-size: 1.5rem;
+  font-size: 1rem;
+  padding-top: 3%;
+  padding-bottom: 3%;
   color: ${({ error, theme }) => error && theme.pink};
   background-color: ${({ theme }) => theme.tertiaryGreen};
   -moz-appearance: textfield;
@@ -88,15 +124,6 @@ const CloseIcon = styled.div`
   }
 `
 
-const TokenModalInfo = styled.div`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: center;
-  padding: 1rem 1.5rem;
-  margin: 0.25rem 0.5rem;
-  justify-content: center;
-  user-select: none;
-`
-
 const RowLeft = styled.div`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items : center;
@@ -128,11 +155,6 @@ const ModalRow = styled.div`
   `}
 `
 
-const SpinnerWrapper = styled(Spinner)`
-  margin: 0 0.25rem 0 0.25rem;
-  color: ${({ theme }) => theme.chaliceGray};
-  opacity: 0.6;
-`
 
 export default function PeerChatModal({
   errorMessage,
@@ -190,21 +212,30 @@ export default function PeerChatModal({
             ref={inputRef}
             type="text"
             error={!!errorMessage}
-            placeholder={'Type your message here....'}
+            placeholder={'Type your message here...'}
             onChange={onInput}
             value={message}
           />
       </InputRow>
       <InputRow>
           <Aligner>
-          <SendButton onClick={async () => {
-            await privateThread.post(message)
-            const dms = await privateThread.getPosts();
-            onNewMessageSent(privateThread, dms)
-            setMessage('')
-          }}>Send</SendButton>
-          <a href="localhost:3000/meeting" target="_blank" rel="noopener noreferrer">Meeting</a>
+          {message === '' ? 
+            <SendButton enabled={false}>Send</SendButton> :  
+            <SendButton enabled={true} onClick={async () => {
+              await privateThread.post(message)
+              const dms = await privateThread.getPosts();
+              onNewMessageSent(privateThread, dms)
+              setMessage('')
+            }}>Send</SendButton>}
           </Aligner>
+      </InputRow>
+      <InputRow>
+        <Aligner>
+          <MeetingButton enabled={true}><a href="localhost:3000/meeting" target="_blank" rel="noopener noreferrer">Start a Meeting</a></MeetingButton>
+          <StaticInformation>
+            This connects you to a peer-to-peer video chat room. You'll be given a <strong>peer Id</strong> which you can give to your peer to connect to. Once you the two of you are connected, you can start a call with your peer.
+          </StaticInformation>
+        </Aligner>
       </InputRow>
         </ChatModal>
     </Modal>
