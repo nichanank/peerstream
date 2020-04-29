@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import styled from 'styled-components'
 import { darken } from 'polished'
 import { isMobile } from 'react-device-detect'
+import { Link } from 'react-router-dom'
 import Modal from '../Modal'
 import { BorderlessInput } from '../../theme'
 import { Spinner } from '../../theme'
@@ -50,14 +51,6 @@ const MeetingButton = styled.div`
   outline: none;
   cursor: pointer;
   user-select: none;
-  a { 
-    text-decoration: none;
-    color: white;
-    text-align: center;
-    align-items: center;
-    margin: auto;
-    font-size: 0.8rem;
-  }
   :hover {
     border: 1px solid
       ${({ enabled, theme }) => (enabled ? darken(0.1, theme.primaryGreen) : darken(0.1, theme.placeholderGray))};
@@ -150,12 +143,6 @@ const ModalRow = styled.div`
   `}
 `
 
-const SpinnerWrapper = styled(Spinner)`
-  margin: 0 0.25rem 0 0.25rem;
-  color: ${({ theme }) => theme.chaliceGray};
-  opacity: 0.6;
-`
-
 export default function MessageModal({
   errorMessage,
   isOpen,
@@ -233,7 +220,7 @@ export default function MessageModal({
             </InputRow>
             <InputRow>
               <Aligner>
-                <MeetingButton enabled={true}><a href={window.location.origin + "/meeting"} target="_blank" rel="noopener noreferrer">Start a Meeting</a></MeetingButton>
+                <MeetingButton enabled={true}><Link to={"/meeting"} target="_blank" id="navigation">Start a Meeting</Link></MeetingButton>
                 <StaticInformation>
                   This connects you to a peer-to-peer video chat room. You'll be given a <strong>peer Id</strong> which you can give to your peer to connect to. Once you the two of you are connected, you can start a call with your peer.
                 </StaticInformation>
