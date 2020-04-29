@@ -307,8 +307,8 @@ export default function StreamConfigModal({
         </InputRow>
         <InputRow>
           <InputTitle>Deposit amount</InputTitle>
-          <InputTitle>Stream start time (GMT)</InputTitle>
-          <InputTitle>Stream stop time (GMT)</InputTitle>
+          <InputTitle>Stream start time (Local)</InputTitle>
+          <InputTitle>Stream stop time (Local)</InputTitle>
         </InputRow>
           <InputRow>
           <Input
