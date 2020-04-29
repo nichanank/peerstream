@@ -5,13 +5,21 @@ import { isMobile } from 'react-device-detect'
 import { Link } from 'react-router-dom'
 import Modal from '../Modal'
 import { BorderlessInput } from '../../theme'
-import { Spinner } from '../../theme'
 import { ReactComponent as Close } from '../../assets/img/x.svg'
 
 const InputRow = styled.div`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items: center;
   padding: 0.25rem 0.85rem 0.75rem;
+`
+
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  font-family: Ubuntu;
+  align-items: center;
+  font-size: 0.8rem;
+  text-align: center;
+  color: white;
 `
 
 const SendButton = styled.button`
@@ -220,7 +228,7 @@ export default function MessageModal({
             </InputRow>
             <InputRow>
               <Aligner>
-                <MeetingButton enabled={true}><Link to={"/meeting"} target="_blank" id="navigation">Start a Meeting</Link></MeetingButton>
+                <MeetingButton enabled={true}><StyledLink to={"/meeting"} target="_blank" id="navigation">Start a Meeting</StyledLink></MeetingButton>
                 <StaticInformation>
                   This connects you to a peer-to-peer video chat room. You'll be given a <strong>peer Id</strong> which you can give to your peer to connect to. Once you the two of you are connected, you can start a call with your peer.
                 </StaticInformation>

@@ -65,6 +65,15 @@ const MeetingButton = styled.div`
   }
 `
 
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  font-family: Ubuntu;
+  align-items: center;
+  font-size: 0.8rem;
+  text-align: center;
+  color: white;
+`
+
 const StaticInformation = styled.p`
   text-align: flex-end;
   align-self: flex-end;
@@ -230,7 +239,7 @@ export default function PeerChatModal({
       </InputRow>
       <InputRow>
         <Aligner>
-        <MeetingButton enabled={true}><Link to={"/meeting"} target="_blank" id="navigation">Start a Meeting</Link></MeetingButton>
+        <MeetingButton enabled={true}><StyledLink to={"/meeting"} target="_blank" id="navigation">Start a Meeting</StyledLink></MeetingButton>
           <StaticInformation>
             This connects you to a peer-to-peer video chat room. You'll be given a <strong>peer Id</strong> which you can give to your peer to connect to. Once you the two of you are connected, you can start a call with your peer.
           </StaticInformation>
