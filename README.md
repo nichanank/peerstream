@@ -1,8 +1,8 @@
 # ⚡️ Peer Stream
 
-Peer Stream utilizes payment streams to link **TIME** with **MONEY**, giving freelancers and clients more freedom and flexibility to engage with each other than ever before. Instead of paying lump-sum for services, payment streams give individuals the flexibility to *stream* funds to people for their time. They can agree on any ERC-20 currency and start/stop the payment stream at any time. Service providers can withdraw from the stream instantaneously. 
+Peer Stream utilizes payment streams to link **TIME** with **MONEY**, giving freelancers and clients more freedom and flexibility to engage with each other than ever before. Instead of paying lump-sum for services, payment streams give individuals the flexibility to *stream* funds to people for their time. They can agree on any ERC-20 currency and start/stop the payment stream at any time. Service providers can withdraw from the stream instantaneously.
 
-See the live demo at https://peerstream.netlify.app. At the moment, payment streams only work with Testnet DAI. Find out how you can mint yourself some Testnet DAI in the [development](#-development) section
+See the live demo at https://peerstream.netlify.app. At the moment, payment streams only work with Testnet DAI. Find out how you can mint yourself some Testnet DAI in the [development](#-development) section. There is also a project [pitch deck](https://docs.google.com/presentation/d/1S2CCW2DdWwrYU8zxMr-aE4jSuIp8VPjEt_rRnOPEN4Y) made for a hackathon but its contents are pretty much identical to this readme.
 
 ## 📖 How it Works
 
@@ -57,7 +57,7 @@ Sablier is a protocol for real-time finance. It is this protocol that makes paym
 
 ### How to get Testnet DAI
 
-Testnet DAI is an ERC-20 token that was made for the purposes of testing decentralized applications. It is available on all the Ethereum networks (Rinkeby, Kovan, Ropsten etc.)
+Testnet DAI is an ERC-20 token that was made for the purposes of testing decentralized applications. It is available on all the Ethereum networks (Rinkeby, Kovan, Ropsten etc.). Here is the token's [source code](https://github.com/PaulRBerg/contractz/blob/e8f89b20a2531f9f126b3ba1f6f6687a09414c09/contracts/TestnetDAI.sol)
 
 1. You can mint yourself some Testnet DAI by going to the contract on their respective Etherscan-s, navigating to `Contract` and then `Write Contract`. 
 
@@ -72,12 +72,20 @@ Testnet DAI is an ERC-20 token that was made for the purposes of testing decentr
 
 Once you have your TestnetDAI you're good to go to test the payment streams feature in the demo! Sign in with your Web3 wallet on the same test network and click `Start Stream` on a Peer Card. Unlike with Etherscan, the app takes care of the 18 token decimals, so if you want to stream 100 tokens to the Peer just put 100.
 
+## 🔮 What might the future hold?
+
+- Virtual world architects are streamed MANA for their time designing in-world estates for clients
+- Beta testers are streamed DAI for interacting with and giving live feedback on new applications
+- Experienced engineers and security experts are streamed cDAI for giving private workshops and webinars
+- Pay-per-minute-stream for your attendance in online classes instead of paying lump sum for access at the beginning
+- Micro-consulting. Get paid even for 10 minutes of your time to answer quick questions from one-time clients
+... and much more. The world is our oyster guys and gals
+
 ## About
 
-This project was built for the [DragonQuest virtual hackathon](https://hackathon.metacartel.org/) which took place from the 1-30th April 2020. The project was bootstrapped with [Create Eth App](https://github.com/paulrberg/create-eth-app) and the [Sablier Template](https://github.com/PaulRBerg/create-eth-app/tree/develop/templates/sablier). The boilerplate comes with a basic example for how to connect and pull data from the [Sablier subgraph](https://thegraph.com/explorer/subgraph/sablierhq/sablier).
+This project was built for the [DragonQuest virtual hackathon](https://hackathon.metacartel.org/) which took place from the 1st to 30th April 2020. I had been excited about the prospect of money streaming and user-owned data for a while and saw that this hackathon came at a great time for me to experiment with both. The project was bootstrapped with [Create Eth App](https://github.com/paulrberg/create-eth-app) and the [Sablier Template](https://github.com/PaulRBerg/create-eth-app/tree/develop/templates/sablier). The boilerplate comes with a basic example for how to connect and pull data from the [Sablier subgraph](https://thegraph.com/explorer/subgraph/sablierhq/sablier).
 
 This template contains two packages:
 
 - [contracts](/packages/contracts)
 - [react-app](/packages/react-app)
-
