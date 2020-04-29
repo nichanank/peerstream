@@ -2,7 +2,7 @@
 
 Peer Stream utilizes payment streams to link **TIME** with **MONEY**, giving freelancers and clients more freedom and flexibility to engage with each other than ever before. Instead of paying lump-sum for services, payment streams give individuals the flexibility to *stream* funds to people for their time. They can agree on any ERC-20 currency and start/stop the payment stream at any time. Service providers can withdraw from the stream instantaneously. 
 
-See the live demo at https://peerstream.netlify.app. At the moment, payment streams only work with Testnet DAI. Find out how you can mint yourself some Testnet DAI in the [development](#development) section
+See the live demo at https://peerstream.netlify.app. At the moment, payment streams only work with Testnet DAI. Find out how you can mint yourself some Testnet DAI in the [development](# 👩🏻‍💻-development) section
 
 ## 📖 How it Works
 
