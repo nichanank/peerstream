@@ -226,7 +226,7 @@ export default function StreamConfigModal({
       let convertedStop = Math.round(stopTime.getTime() / 1000)
       let convertedDeposit = new BigNumber(deposit).multipliedBy(10 ** 18).toFixed(0)
       let remainder = new BigNumber(convertedDeposit) % (convertedStop - convertedStart)
-      let amountToDeposit = new BigNumber(convertedDeposit - remainder).toString()
+      let amountToDeposit = new BigNumber(convertedDeposit).minus(remainder).toString()
 
       return (
         <StreamConfigButton enabled={true} onClick={async () => {
@@ -251,7 +251,7 @@ export default function StreamConfigModal({
       let convertedStop = Math.round(stopTime.getTime() / 1000)
       let convertedDeposit = new BigNumber(deposit).multipliedBy(10 ** 18).toFixed(0)
       let remainder = new BigNumber(convertedDeposit) % (convertedStop - convertedStart)
-      let amountToDeposit = new BigNumber(convertedDeposit - remainder).toString()
+      let amountToDeposit = new BigNumber(convertedDeposit).minus(remainder).toString()
     
       return (
         <StreamConfigButton enabled={true} onClick={async () => {

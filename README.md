@@ -79,7 +79,7 @@ Once you have your TestnetDAI you're good to go to test the payment streams feat
 - Experienced engineers and security experts are streamed cDAI for giving private workshops and webinars
 - Pay-per-minute-stream for your attendance in online classes instead of paying lump sum for access at the beginning
 - Micro-consulting. Get paid even for 10 minutes of your time to answer quick questions from one-time clients
-... and much more. The world is our oyster guys and gals
+- ... and much more. The world is our oyster guys and gals
 
 ## About
 
